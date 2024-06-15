@@ -1,4 +1,4 @@
-import { TransactionReceipt, createPublicClient, createWalletClient, http, parseAbiItem, encodePacked, keccak256 } from 'viem';
+import { TransactionReceipt, createPublicClient, createWalletClient, http, parseAbiItem, encodePacked, keccak256, WatchEventReturnType } from 'viem';
 import { Chain } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import { Subscription, SponsorPermit } from './types';
@@ -36,7 +36,7 @@ export class Sub2SDK {
 
   }
 
-  async getSubscriptions(subscriptionIndices: bigint[]): Promise<Subscription[]> {
+  async getSubscriptions(subscriptionIndices: bigint[]) : Promise<Subscription[]> {
     try {
       const data = await this.publicClient.readContract({
         address: QUERIER_ADDRESS,
@@ -63,7 +63,7 @@ export class Sub2SDK {
     }
   }
 
-  async cancelSubscription(subscriptionIndex: bigint): Promise<TransactionReceipt> {
+  async cancelSubscription(subscriptionIndex: bigint) : Promise<TransactionReceipt> {
     if(!this.walletClient || !this.account) throw new Error('Private key not provided. Cannot cancel subscription.');
 
     const { request } = await this.publicClient.simulateContract({
@@ -86,9 +86,9 @@ export class Sub2SDK {
   }
 
 
-  watchIncommingSubscriptions(recipient: `0x${string}`, onNewSubscription: (subscription: Subscription) => any): () => any {
+  watchIncommingSubscriptions(recipient: `0x${string}`, onNewSubscription: (subscription: Subscription) => any) : WatchEventReturnType {
     
-    const unwatch = this.publicClient.watchEvent({
+    const unwatch: WatchEventReturnType = this.publicClient.watchEvent({
       address: SUB2_ADDRESS,
       event: parseAbiItem('event SubscriptionCreated(uint256 indexed subscriptionIndex, address indexed recipient)'),
       args: {
@@ -108,9 +108,9 @@ export class Sub2SDK {
     return unwatch;
   }
 
-  watchIncommingPayments(recipient: `0x${string}`, onNewPayment: (subscriptionId: bigint) => any): () => any {
+  watchIncommingPayments(recipient: `0x${string}`, onNewPayment: (subscriptionId: bigint) => any) : WatchEventReturnType {
     
-    const unwatch = this.publicClient.watchEvent({
+    const unwatch: WatchEventReturnType = this.publicClient.watchEvent({
       address: SUB2_ADDRESS,
       event: parseAbiItem('event Payment(address indexed sender, address indexed recipient, uint256 indexed subscriptionIndex, address sponsor, uint256 amount, address token, uint256 protocolFee, uint256 processingFee, address processingFeeToken, uint256 terms)'),
       args: {
@@ -127,9 +127,9 @@ export class Sub2SDK {
   }
 
 
-  watchCanceledSubscriptions(recipient: `0x${string}`, onCanceledSubscription: (subscriptionId: bigint) => any): () => any {
+  watchCanceledSubscriptions(recipient: `0x${string}`, onCanceledSubscription: (subscriptionId: bigint) => any) : WatchEventReturnType {
     
-    const unwatch = this.publicClient.watchEvent({
+    const unwatch: WatchEventReturnType = this.publicClient.watchEvent({
       address: SUB2_ADDRESS,
       event: parseAbiItem('event SubscriptionCanceled(uint256 indexed subscriptionIndex, address indexed recipient)'),
       args: {
@@ -191,7 +191,7 @@ export class Sub2SDK {
   }
 
   
-  async isPayedSubscriber(sender: `0x${string}`, recipient: `0x${string}`, minAmount: bigint, token: `0x${string}`, cooldown: number): Promise<boolean> {
+  async isPayedSubscriber(sender: `0x${string}`, recipient: `0x${string}`, minAmount: bigint, token: `0x${string}`, cooldown: number) : Promise<boolean> {
     const data = await this.publicClient.readContract({
       address: QUERIER_ADDRESS,
       abi: querierAbi,
@@ -203,7 +203,7 @@ export class Sub2SDK {
   
 
 
-  async processBatch(subscriptionIndices: bigint[], feeRecipient: `0x${string}`): Promise<TransactionReceipt> {
+  async processBatch(subscriptionIndices: bigint[], feeRecipient: `0x${string}`) : Promise<TransactionReceipt> {
     if(!this.walletClient || !this.account) throw new Error('Private key not provided. Cannot process batch.');
 
     const { request } = await this.publicClient.simulateContract({
@@ -226,7 +226,7 @@ export class Sub2SDK {
   }
 
 
-  async getActiveSubscriptionsToRecipient(recipient: `0x${string}`): Promise<Subscription[]> {
+  async getActiveSubscriptionsToRecipient(recipient: `0x${string}`) : Promise<Subscription[]> {
     const data = await this.publicClient.readContract({
       address: QUERIER_ADDRESS,
       abi: querierAbi,
@@ -242,7 +242,7 @@ export class Sub2SDK {
     return subscriptions;
   }
 
-  async getActiveSubscriptionsFromSender(sender: `0x${string}`): Promise<Subscription[]> {
+  async getActiveSubscriptionsFromSender(sender: `0x${string}`) : Promise<Subscription[]> {
     const data = await this.publicClient.readContract({
       address: QUERIER_ADDRESS,
       abi: querierAbi,
