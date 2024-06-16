@@ -1,6 +1,4 @@
-import { TransactionReceipt, createPublicClient, createWalletClient, http, parseAbiItem, encodePacked, keccak256, WatchEventReturnType } from 'viem';
-import { Chain } from 'viem/chains';
-import { privateKeyToAccount } from 'viem/accounts';
+import { TransactionReceipt, PublicClient, WalletClient, parseAbiItem, encodePacked, keccak256, WatchEventReturnType, Account } from 'viem';
 import { Subscription, SponsorPermit } from './types';
 import { sub2Abi } from '../abis/sub2';
 import { batchProcessorAbi } from '../abis/batchProcessor';
@@ -9,34 +7,27 @@ import { SUB2_ADDRESS, BATCH_PROCESSOR_ADDRESS, QUERIER_ADDRESS } from './consta
 import { ethers } from 'ethers';
 
 export class Sub2SDK {
-  private publicClient: ReturnType<typeof createPublicClient>;
-  private walletClient: ReturnType<typeof createWalletClient> | undefined;
-  private account: ReturnType<typeof privateKeyToAccount> | undefined;
-  private chain: Chain;
+  private publicClient: PublicClient | undefined;
+  private walletClient: WalletClient | undefined;
 
-  constructor(rpcUrl: string, chain: Chain, privateKey?: `0x${string}`) {
-    this.chain = chain;
-    this.publicClient = createPublicClient({
-      chain,
-      transport: http(rpcUrl)
-    });
-    if(privateKey) {
-      this.account = privateKeyToAccount(privateKey);
-      this.walletClient = createWalletClient({
-        account: privateKeyToAccount(privateKey),
-        chain,
-        transport: http(rpcUrl)
-      });
+  constructor(publicClient?: PublicClient, walletClient?: WalletClient) {
+    if(publicClient) {
+      this.publicClient = publicClient;
+    }
+    else {
+      this.publicClient = undefined;
+    }
+
+    if(walletClient) {
+      this.walletClient = walletClient;
     }
     else {
       this.walletClient = undefined;
-      this.account = undefined;
     }
-    
-
   }
 
   async getSubscriptions(subscriptionIndices: bigint[]) : Promise<Subscription[]> {
+    if(!this.publicClient) throw new Error('Public client not provided.');
     try {
       const data = await this.publicClient.readContract({
         address: QUERIER_ADDRESS,
@@ -64,14 +55,15 @@ export class Sub2SDK {
   }
 
   async cancelSubscription(subscriptionIndex: bigint) : Promise<TransactionReceipt> {
-    if(!this.walletClient || !this.account) throw new Error('Private key not provided. Cannot cancel subscription.');
+    if(!this.publicClient) throw new Error('Public client not provided.');
+    if(!this.walletClient) throw new Error('Wallet client not provided.');
 
     const { request } = await this.publicClient.simulateContract({
       address: SUB2_ADDRESS,
       abi: sub2Abi,
       functionName: 'cancelSubscription',
       args: [subscriptionIndex],
-      account: this.account
+      account: this.walletClient.account as `0x${string}` | Account
     });
 
     if(!request) throw new Error('Failed to cancel subscription.')
@@ -87,7 +79,7 @@ export class Sub2SDK {
 
 
   watchIncommingSubscriptions(recipient: `0x${string}`, onNewSubscription: (subscription: Subscription) => any) : WatchEventReturnType {
-    
+    if(!this.publicClient) throw new Error('Public client not provided.');
     const unwatch: WatchEventReturnType = this.publicClient.watchEvent({
       address: SUB2_ADDRESS,
       event: parseAbiItem('event SubscriptionCreated(uint256 indexed subscriptionIndex, address indexed recipient)'),
@@ -109,7 +101,7 @@ export class Sub2SDK {
   }
 
   watchIncommingPayments(recipient: `0x${string}`, onNewPayment: (subscriptionId: bigint) => any) : WatchEventReturnType {
-    
+    if(!this.publicClient) throw new Error('Public client not provided.');
     const unwatch: WatchEventReturnType = this.publicClient.watchEvent({
       address: SUB2_ADDRESS,
       event: parseAbiItem('event Payment(address indexed sender, address indexed recipient, uint256 indexed subscriptionIndex, address sponsor, uint256 amount, address token, uint256 protocolFee, uint256 processingFee, address processingFeeToken, uint256 terms)'),
@@ -128,8 +120,8 @@ export class Sub2SDK {
 
 
   watchCanceledSubscriptions(recipient: `0x${string}`, onCanceledSubscription: (subscriptionId: bigint) => any) : WatchEventReturnType {
-    
-    const unwatch: WatchEventReturnType = this.publicClient.watchEvent({
+    if(!this.publicClient) throw new Error('Public client not provided. Cannot watch canceled subscriptions.');
+    const unwatch: WatchEventReturnType = this.publicClient!.watchEvent({
       address: SUB2_ADDRESS,
       event: parseAbiItem('event SubscriptionCanceled(uint256 indexed subscriptionIndex, address indexed recipient)'),
       args: {
@@ -147,13 +139,13 @@ export class Sub2SDK {
 
   async generateSponsorSignature(sponsorPermit: SponsorPermit) : Promise<`0x${string}`> {
     
-    if(!this.walletClient || !this.account) throw new Error('Private key not provided. Cannot sign message.');
+    if(!this.walletClient) throw new Error('Wallet client not provided.');
     
     const signature = await this.walletClient.signTypedData({
-      account: this.account,
+      account: this.walletClient.account as `0x${string}` | Account,
       domain: {
         name: "Sub2",
-        chainId: this.chain.id,
+        chainId: this.walletClient.chain!.id,
         verifyingContract: SUB2_ADDRESS,
       },
       types: {
@@ -192,6 +184,7 @@ export class Sub2SDK {
 
   
   async isPayedSubscriber(sender: `0x${string}`, recipient: `0x${string}`, minAmount: bigint, token: `0x${string}`, cooldown: number) : Promise<boolean> {
+    if(!this.publicClient) throw new Error('Public client not provided.');
     const data = await this.publicClient.readContract({
       address: QUERIER_ADDRESS,
       abi: querierAbi,
@@ -204,14 +197,15 @@ export class Sub2SDK {
 
 
   async processBatch(subscriptionIndices: bigint[], feeRecipient: `0x${string}`) : Promise<TransactionReceipt> {
-    if(!this.walletClient || !this.account) throw new Error('Private key not provided. Cannot process batch.');
+    if(!this.publicClient) throw new Error('Public client not provided.');
+    if(!this.walletClient) throw new Error('Wallet client not provided.');
 
     const { request } = await this.publicClient.simulateContract({
       address: BATCH_PROCESSOR_ADDRESS,
       abi: batchProcessorAbi,
       functionName: 'processBatch',
       args: [subscriptionIndices, feeRecipient],
-      account: this.account
+      account: this.walletClient.account as `0x${string}` | Account
     });
 
     if(!request) throw new Error('Failed to process batch.')
@@ -227,6 +221,7 @@ export class Sub2SDK {
 
 
   async getActiveSubscriptionsToRecipient(recipient: `0x${string}`) : Promise<Subscription[]> {
+    if(!this.publicClient) throw new Error('Public client not provided.');
     const data = await this.publicClient.readContract({
       address: QUERIER_ADDRESS,
       abi: querierAbi,
@@ -243,6 +238,7 @@ export class Sub2SDK {
   }
 
   async getActiveSubscriptionsFromSender(sender: `0x${string}`) : Promise<Subscription[]> {
+    if(!this.publicClient) throw new Error('Public client not provided.');
     const data = await this.publicClient.readContract({
       address: QUERIER_ADDRESS,
       abi: querierAbi,
@@ -312,9 +308,10 @@ export class Sub2SDK {
 
 
   async testSimulateContract() {
-
+    if(!this.publicClient) throw new Error('Public client not provided.');
+    if(!this.walletClient) throw new Error('Wallet client not provided.');
     const data = await this.publicClient.simulateContract({
-      account: this.account,
+      account: this.walletClient.account as `0x${string}` | Account,
       address: SUB2_ADDRESS,
       abi: sub2Abi,
       functionName: 'createSubscriptionWithSponsor',
@@ -343,11 +340,11 @@ export class Sub2SDK {
 
 
   async testWriteContract() {
-
-    if(!this.walletClient || !this.account) throw new Error('Private key not provided. Cannot write contract.');
+    if(!this.publicClient) throw new Error('Public client not provided.');
+    if(!this.walletClient) throw new Error('Wallet client not provided.');
 
     const { request } = await this.publicClient.simulateContract({
-      account: this.account,
+      account: this.walletClient.account as `0x${string}` | Account,
       address: SUB2_ADDRESS,
       abi: sub2Abi,
       functionName: 'createSubscriptionWithSponsor',
