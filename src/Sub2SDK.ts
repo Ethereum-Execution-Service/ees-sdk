@@ -1,8 +1,8 @@
 import { TransactionReceipt, PublicClient, WalletClient, parseAbiItem, WatchEventReturnType, Account } from 'viem';
 import { Subscription, SponsorPermit, Payment } from './types';
-import { sub2Abi } from '../abis/sub2';
-import { batchProcessorAbi } from '../abis/batchProcessor';
-import { querierAbi } from '../abis/querier';
+import { sub2Abi } from './abis/sub2';
+import { batchProcessorAbi } from './abis/batchProcessor';
+import { querierAbi } from './abis/querier';
 import { SUB2_ADDRESS, BATCH_PROCESSOR_ADDRESS, QUERIER_ADDRESS } from './constants';
 
 export class Sub2SDK {
