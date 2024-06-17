@@ -2,13 +2,23 @@
   "name": "sub2-sdk",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["subscriptions", "sub2", "typescript", "ethereum", "blockchain"],
+  "author": "Victor Brevig",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/victorbrevig/sub2-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/victorbrevig/sub2-sdk/issues"
+  },
+  "homepage": "https://github.com/victorbrevig/sub2-sdk#readme",
   "dependencies": {
     "@types/node": "^20.12.13",
     "dotenv": "^16.4.5",
