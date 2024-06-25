@@ -487,21 +487,6 @@ export declare const sub2Abi: readonly [{
     readonly stateMutability: "view";
 }, {
     readonly type: "event";
-    readonly name: "AuctionDurationUpdated";
-    readonly inputs: readonly [{
-        readonly name: "subscriptionIndex";
-        readonly type: "uint256";
-        readonly indexed: false;
-        readonly internalType: "uint256";
-    }, {
-        readonly name: "auctionDuration";
-        readonly type: "uint256";
-        readonly indexed: false;
-        readonly internalType: "uint256";
-    }];
-    readonly anonymous: false;
-}, {
-    readonly type: "event";
     readonly name: "MaxProcessingFeeUpdated";
     readonly inputs: readonly [{
         readonly name: "subscriptionIndex";
