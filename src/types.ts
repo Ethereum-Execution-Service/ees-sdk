@@ -1,46 +1,65 @@
+import { SimulateContractParameters } from 'viem';
 
-
-export interface Subscription {
-  id: bigint;
-  sender: `0x${string}`,
-  recipient: `0x${string}`,
+export interface Job {
+  index: bigint;
+  owner: `0x${string}`,
   sponsor: `0x${string}`,
-  amount: bigint,
-  token: `0x${string}`,
-  maxProcessingFee: bigint,
-  processingFeeToken: `0x${string}`,
-  cooldown: number,
-  auctionDuration: number,
-  paymentCounter: number,
-  status: 'canceled' | 'expired' | 'auction' |  'waiting';
-  lastPayment: Date,
-  nextPaymentAvailable: Date;
-  nextPaymentDue: Date;
+  active: boolean,
+  ignoreAppRevert: boolean,
+  inactiveGracePeriod: number,
+  application: `0x${string}`,
+  executionWindow: number,
+  executionCounter: number,
+  maxExecutions: number,
+  executionModuleCode: `0x${string}`,
+  feeModuleCode: `0x${string}`,
+  executionModule: RegularTimeInterval,
+  feeModule: LinearAuction,
+  jobIsExpired: boolean,
+  jobInExecutionWindow: boolean,
+  nextExecution: bigint
 }
 
-export interface SponsorPermit {
+export type FeeCalculationMinimum = {
+  feeModule: LinearAuction;
+  executionWindow: number;
+  nextExecution: bigint;
+  feeModuleCode: `0x${string}`;
+};
+
+export interface RegularTimeInterval {
+  lastExecution: number,
+  cooldown: number
+}
+
+export interface LinearAuction {
+  executionFeeToken: `0x${string}`,
+  minExecutionFee: bigint,
+  maxExecutionFee: bigint
+}
+
+export interface JobSpecification {
   nonce: bigint,
   deadline: bigint,
-  recipient: `0x${string}`,
-  amount: bigint,
-  token: `0x${string}`,
-  cooldown: number,
-  delay: number,
-  auctionDuration: number,
-  initialPayments: number,
-  maxProcessingFee: bigint,
-  processingFeeToken: `0x${string}`
+  application: `0x${string}`,
+  executionWindow: number,
+  maxExecutions: number,
+  inactiveGracePeriod: number,
+  ignoreAppRevert: boolean,
+  executionModule: `0x${string}`,
+  feeModule: `0x${string}`,
+  executionModuleInput: `0x${string}`,
+  feeModuleInput: `0x${string}`,
+  applicationInput: `0x${string}`
 }
 
-export interface Payment {
-  sender: `0x${string}`,
-  recipient: `0x${string}`,
-  subscriptionIndex: bigint,
-  sponsor: `0x${string}`,
-  amount: bigint,
-  token: `0x${string}`,
-  protocolFee: bigint,
-  processingFee: bigint,
-  processingFeeToken: `0x${string}`,
-  terms: bigint,
+export interface FeeModuleInput {
+  nonce: bigint,
+  deadline: bigint,
+  index: bigint,
+  feeModule: `0x${string}`,
+  feeModuleInput: `0x${string}`
 }
+
+
+export type ContractCallOptions = Partial<Omit<SimulateContractParameters, 'address' | 'abi' | 'functionName' | 'args' | 'account'>>;

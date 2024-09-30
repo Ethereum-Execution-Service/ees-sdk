@@ -1,2 +1,2 @@
-export { Sub2SDK } from './Sub2SDK';
-export { Subscription, SponsorPermit, Payment } from './types';
+export { EESSDK } from './EESSDK';
+export { Job, RegularTimeInterval, LinearAuction, JobSpecification, FeeModuleInput } from './types';

@@ -24,7 +24,7 @@
     "dotenv": "^16.4.5",
     "ethers": "^6.12.2",
     "typescript": "^5.4.5",
-    "viem": "^2.13.1"
+    "viem": "2.19.3"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
