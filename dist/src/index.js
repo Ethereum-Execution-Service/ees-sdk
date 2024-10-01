@@ -1,5 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Sub2SDK = void 0;
-var Sub2SDK_1 = require("./Sub2SDK");
-Object.defineProperty(exports, "Sub2SDK", { enumerable: true, get: function () { return Sub2SDK_1.Sub2SDK; } });
+exports.EESSDK = void 0;
+var EESSDK_1 = require("./EESSDK");
+Object.defineProperty(exports, "EESSDK", { enumerable: true, get: function () { return EESSDK_1.EESSDK; } });

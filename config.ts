@@ -11,7 +11,7 @@ export const publicClient = createPublicClient({
     multicall: true, 
   },
   chain: baseSepolia,
-  transport: http(ALCHEMY_RPC_URL)
+  transport: http()
 });
 export const walletClient: WalletClient = createWalletClient({
   account: privateKeyToAccount(`0x${PRIVATE_KEY}`),
