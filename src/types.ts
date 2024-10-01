@@ -1,4 +1,4 @@
-import { SimulateContractParameters } from 'viem';
+import { SimulateContractParameters, Address, Abi } from 'viem';
 
 export interface Job {
   index: bigint;
@@ -53,6 +53,33 @@ export interface JobSpecification {
   applicationInput: `0x${string}`
 }
 
+export interface ProtocolConfig {
+  jobRegistry: `0x${string}`,
+  executionManager: `0x${string}`,
+  querier: `0x${string}`,
+  executionGasOverhead: bigint,
+  executionModulesLength: bigint,
+  feeModulesLength: bigint,
+  stakingToken: `0x${string}`,
+  stakingAmount: bigint,
+  minimumStakingPeriod: bigint,
+  stakingBalanceThreshold: bigint,
+  inactiveSlashingAmount: bigint,
+  commitSlashingAmount: bigint,
+  roundsPerEpoch: number,
+  executorTax: bigint,
+  protocolTax: bigint,
+  roundDuration: number,
+  roundBuffer: number,
+  slashingDuration: number,
+  commitPhaseDuration: number,
+  revealPhaseDuration: number,
+  selectionPhaseDuration: number,
+  totalRoundDuration: number,
+  epochDuration: number
+}
+
+
 export interface FeeModuleInput {
   nonce: bigint,
   deadline: bigint,
@@ -61,5 +88,12 @@ export interface FeeModuleInput {
   feeModuleInput: `0x${string}`
 }
 
+
+export interface ContractFunctionConfig {
+  address: Address;
+  abi: Abi;
+  functionName: string;
+  args?: readonly unknown[];
+}
 
 export type ContractCallOptions = Partial<Omit<SimulateContractParameters, 'address' | 'abi' | 'functionName' | 'args' | 'account'>>;

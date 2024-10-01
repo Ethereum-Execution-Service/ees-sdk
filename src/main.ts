@@ -1,11 +1,12 @@
 import { createWalletClient, createPublicClient, encodeAbiParameters, parseUnits, TransactionReceipt } from "viem";
 import { JobSpecification, Job } from "./types";
 import { publicClient, walletClient } from "../config";
+import { PublicClient, WalletClient } from "viem";
 import { EESSDK } from "./EESSDK";
-import {JOBREGISTRY_ADDRESS} from "./constants";
 
 async function main() {
-  const eesSdk = new EESSDK(publicClient, walletClient);
+  const configProviderAddress = "0x909E93FaF672723D56dD83563F247C9ae7d3Dc2b";
+  const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
   const jobSpecification: JobSpecification = {
     nonce: 88805526045906062658843605009268256866115913838000966001699316491583730826117n,
@@ -42,18 +43,74 @@ async function main() {
     )
   };
 
+  //console.log(eesSdk.getProtocolConfig());
+
   //console.log(jobSpecification);
-  const signature: `0x${string}` = await eesSdk.signJobSpecification(jobSpecification);
+  //const signature: `0x${string}` = await eesSdk.signJobSpecification(jobSpecification);
   //console.log("signature:", signature);
   
-  //const txReceipt: TransactionReceipt = await eesSdk.approveFeeToken("0x701f372f2A10688c4f3e31E20ceabC1f3A88ac2c", 115792089237316195423570985008687907853269984665640564039457584007913129639935n);
-  //console.log(txReceipt);
+  /*
+  await eesSdk.approveFeeToken("0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((txReceipt: TransactionReceipt) => {
+    console.log(txReceipt);
+  });
+  */
+
+  /*
+  await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((txReceipt: TransactionReceipt) => {
+    console.log(txReceipt);
+  });
+  await eesSdk.stake().then((txReceipt: TransactionReceipt) => {
+    console.log(txReceipt);
+  });
+  */
+  
+  
+  /*
+  await eesSdk.unstake().then((txReceipt: TransactionReceipt) => {
+    console.log(txReceipt);
+  });
+  */
+  //const currentEpoch: bigint = await eesSdk.getEpoch();
+  //console.log("CURRENT EPOCH: ", currentEpoch);
+// get chain id
+//console.log(publicClient.chain?.id);
+  
+ /*
+  const currentEpoch: bigint = await eesSdk.getEpoch();
+  console.log("CURRENT EPOCH: ", currentEpoch);
+  */
+
+  /*
+  await eesSdk.initiateEpoch().then((txReceipt: TransactionReceipt) => {
+    console.log(txReceipt);
+  });
+  const { transactionReceipt, secret }: { transactionReceipt: TransactionReceipt, secret: `0x${string}` } = await eesSdk.commit(3n);
+  console.log("SIGNATURE: ", secret);
+  */
+  
+  
+  await eesSdk.reveal("0x51de6cf657335f0a5664bc7483aec7d931beb895563fa2312546c22092da62de0c71c2660ee267b1b0ee0e0e7ec7a2b9ad5898dafe450f77151ebfdd61d090221b").then((transactionReceipt: TransactionReceipt) => {
+    console.log(transactionReceipt);
+  });
+  
+  
+  
 
 
+  /*
+  await eesSdk.getAllowance(eesSdk.getProtocolConfig().stakingToken, walletClient.account?.address!, eesSdk.getProtocolConfig().executionManager).then((allowance: bigint) => {
+    console.log(allowance);
+  });
+  await eesSdk.getBalance(eesSdk.getProtocolConfig().stakingToken, walletClient.account?.address!).then((balance: bigint) => {
+    console.log(balance);
+  });
+  */
+  //console.log(eesSdk.getProtocolConfig());
+  
+  
 
-  const res: readonly[bigint, boolean] = await eesSdk.getTokenPrice("0xF671644C9e793caF69a45520B609DDD83611FE34", encodeAbiParameters([{ name: 'feed', type: 'address' }], ["0x0FB99723Aee6f420beAD13e6bBB79b7E6F034298"]));
-
-  console.log(res);
+  //const res: readonly[bigint, boolean] = await eesSdk.getTokenPrice("0xF671644C9e793caF69a45520B609DDD83611FE34", encodeAbiParameters([{ name: 'feed', type: 'address' }], ["0x0FB99723Aee6f420beAD13e6bBB79b7E6F034298"]));
+  //console.log(res);
 
 
   //const txReceipt: TransactionReceipt = await eesSdk.deleteJob(4n);

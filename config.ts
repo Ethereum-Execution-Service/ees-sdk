@@ -6,13 +6,15 @@ import { baseSepolia } from 'viem/chains';
 dotenv.config();
 const { PRIVATE_KEY, ALCHEMY_RPC_URL } = process.env;
  
-export const publicClient: PublicClient = createPublicClient({
+export const publicClient = createPublicClient({
+  batch: {
+    multicall: true, 
+  },
   chain: baseSepolia,
-  transport: http()
-}) as PublicClient;
+  transport: http(ALCHEMY_RPC_URL)
+});
 export const walletClient: WalletClient = createWalletClient({
-  // DELETE THIS BEFORE PUSHING TO GITHUB
-  account: privateKeyToAccount(`0x17d67721cfbb1c8c1be991cb023c03e1232ea755e247b1a723787879f5a5514f`),
+  account: privateKeyToAccount(`0x${PRIVATE_KEY}`),
   chain: baseSepolia,
   transport: http()
 });
