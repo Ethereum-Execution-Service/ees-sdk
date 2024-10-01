@@ -449,7 +449,7 @@ class EESSDK {
     }
     formatJobData(index, jobData) {
         let executionModule;
-        let nextExecution;
+        let nextExecution = 0n;
         let feeModule;
         if (jobData.executionModule === "0x00") {
             // RegularTimeInterval
@@ -458,7 +458,7 @@ class EESSDK {
                 lastExecution: executionModuleData[0],
                 cooldown: executionModuleData[1],
             };
-            nextExecution = executionModule.lastExecution + executionModule.cooldown;
+            nextExecution = BigInt(executionModule.lastExecution + executionModule.cooldown);
         }
         if (jobData.feeModule === "0x00") {
             // LinearAuction

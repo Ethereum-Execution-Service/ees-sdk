@@ -1,4 +1,4 @@
-import { SimulateContractParameters, Address, Abi } from 'viem';
+import { SimulateContractParameters, WriteContractParameters, Address, Abi } from 'viem';
 
 export interface Job {
   index: bigint;
@@ -96,4 +96,4 @@ export interface ContractFunctionConfig {
   args?: readonly unknown[];
 }
 
-export type ContractCallOptions = Partial<Omit<SimulateContractParameters, 'address' | 'abi' | 'functionName' | 'args' | 'account'>>;
+export type ContractCallOptions = Partial<Omit<SimulateContractParameters & WriteContractParameters, 'address' | 'abi' | 'functionName' | 'args' | 'account'>>;

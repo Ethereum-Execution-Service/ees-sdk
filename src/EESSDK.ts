@@ -430,7 +430,7 @@ export class EESSDK {
   async commit(epoch: bigint, options?: ContractCallOptions) : Promise<{ transactionReceipt: TransactionReceipt, secret: `0x${string}` }> {
     this.checkProtocolConfig();
     const msgHash = keccak256(
-      encodePacked(['uint192', 'uint256'], [epoch, BigInt(this.publicClient.chain?.id)])
+      encodePacked(['uint192', 'uint256'], [epoch, BigInt(this.publicClient.chain?.id!)])
     );
 
     const signature = await this.walletClient!.signMessage({ 
@@ -514,7 +514,7 @@ export class EESSDK {
   }) : Job {
     
       let executionModule;
-      let nextExecution: bigint;
+      let nextExecution: bigint = 0n;
       let feeModule: LinearAuction | undefined;
 
       if(jobData.executionModule === "0x00") {
@@ -526,7 +526,7 @@ export class EESSDK {
             cooldown: executionModuleData[1],
           } as RegularTimeInterval;
 
-        nextExecution = executionModule.lastExecution + executionModule.cooldown;
+        nextExecution = BigInt(executionModule.lastExecution + executionModule.cooldown);
       }
 
       if(jobData.feeModule === "0x00") {
