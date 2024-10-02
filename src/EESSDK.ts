@@ -359,6 +359,18 @@ export class EESSDK {
     return gas;
   }
 
+  async estimateExecutionGas(index: bigint, feeRecipient: `0x${string}`) : Promise<bigint> {
+    this.checkProtocolConfig();
+    const gas = await this.publicClient.estimateContractGas({
+      address: this.protocolConfig!.jobRegistry,
+      abi: jobRegistryAbi,
+      functionName: 'execute',
+      args: [index, feeRecipient],
+      account: this.protocolConfig!.executionManager
+    });
+    return gas;
+  }
+
   async revokeSponsorship(index: bigint, options?: ContractCallOptions) : Promise<TransactionReceipt> {
     this.checkProtocolConfig();
     const { transactionReceipt } = await this.executeTransaction({

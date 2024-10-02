@@ -122,7 +122,7 @@ export interface EESSDK {
   executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<{ transactionReceipt: TransactionReceipt, numberOfExecutions: bigint }>;
 
   /**
-   * Estimates the gas for executing a batch of jobs.
+   * Estimates the gas for executing a batch of jobs in ExecutionManager.
    * @param indices - An array of indices of jobs to execute.
    * @param gasLimits - An array of gas limits for each job.
    * @param feeRecipient - The address of the fee recipient.
@@ -130,6 +130,15 @@ export interface EESSDK {
    * @returns A promise that resolves to the estimated gas.
    */
   estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<bigint>;
+
+  /**
+   * Estimates the gas for calling "execute" on a single job in JobRegistry.
+   * @param index - The index of the job to execute.
+   * @param feeRecipient - The address of the fee recipient.
+   * @returns A promise that resolves to the estimated gas.
+   */
+  estimateExecutionGas(index: bigint, feeRecipient: `0x${string}`) : Promise<bigint>;
+
 
   /**
    * Revokes sponsorship for a job. This will set the sponsor address to the owner of the job.
