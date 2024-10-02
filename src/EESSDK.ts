@@ -141,6 +141,16 @@ export class EESSDK {
     return data;
   }
 
+  async getJobsArrayLength(): Promise<bigint> {
+    this.checkProtocolConfig();
+    const data = await this.publicClient.readContract({
+      address: this.protocolConfig!.jobRegistry,
+      abi: jobRegistryAbi,
+      functionName: 'getJobsArrayLength'
+    });
+    return data;
+  }
+
   async getJobs(indices: bigint[]): Promise<Job[]> {
     this.checkProtocolConfig();
     const data = await this.publicClient.readContract({

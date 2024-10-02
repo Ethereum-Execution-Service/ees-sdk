@@ -13,6 +13,7 @@ export declare class EESSDK {
     getProtocolConfig(): ProtocolConfig;
     private checkProtocolConfig;
     getTokenPrice(oracleAddress: `0x${string}`, token: `0x${string}`, auxData: `0x${string}`): Promise<readonly [bigint, boolean]>;
+    getJobsArrayLength(): Promise<bigint>;
     getJobs(indices: bigint[]): Promise<Job[]>;
     private executeTransaction;
     createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;

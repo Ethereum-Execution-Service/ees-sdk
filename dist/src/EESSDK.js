@@ -119,6 +119,15 @@ class EESSDK {
         });
         return data;
     }
+    async getJobsArrayLength() {
+        this.checkProtocolConfig();
+        const data = await this.publicClient.readContract({
+            address: this.protocolConfig.jobRegistry,
+            abi: jobRegistry_1.jobRegistryAbi,
+            functionName: 'getJobsArrayLength'
+        });
+        return data;
+    }
     async getJobs(indices) {
         this.checkProtocolConfig();
         const data = await this.publicClient.readContract({

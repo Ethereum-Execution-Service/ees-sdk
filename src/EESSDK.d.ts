@@ -29,6 +29,15 @@ export interface EESSDK {
    */
   constructor(chainId: bigint, publicClient?: PublicClient, walletClient?: WalletClient);
 
+
+  /**
+   * Retrieves the total number of jobs in the JobRegistry.
+   * @notice The length of the jobs array is not the same as the total number of jobs. Some entries might be empty.
+   * @throws An error if the protocol config is not initialized.
+   * @returns A promise that resolves to a bigint representing the legnth of the jobs array.
+   */
+  getJobsArrayLength(): Promise<bigint>;
+
   /**
    * Retrieves jobs based on their indices.
    * @throws An error if the class was not initialized with a publicClient.
