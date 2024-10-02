@@ -122,6 +122,16 @@ export interface EESSDK {
   executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<{ transactionReceipt: TransactionReceipt, numberOfExecutions: bigint }>;
 
   /**
+   * Estimates the gas for executing a batch of jobs.
+   * @param indices - An array of indices of jobs to execute.
+   * @param gasLimits - An array of gas limits for each job.
+   * @param feeRecipient - The address of the fee recipient.
+   * @param checkIn - A boolean flag indicating whether to check in.
+   * @returns A promise that resolves to the estimated gas.
+   */
+  estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<bigint>;
+
+  /**
    * Revokes sponsorship for a job. This will set the sponsor address to the owner of the job.
    * @notice This function is only callable by the owner or sponsor of the job.
    * @throws An error if the class was not initialized with a publicClient and walletClient.

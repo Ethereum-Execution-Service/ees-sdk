@@ -27,6 +27,7 @@ export declare class EESSDK {
         transactionReceipt: TransactionReceipt;
         numberOfExecutions: bigint;
     }>;
+    estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean): Promise<bigint>;
     revokeSponsorship(index: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;
     approveFeeToken(token: `0x${string}`, amount: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;
     approveStakingToken(amount: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;

@@ -348,6 +348,17 @@ export class EESSDK {
     return { transactionReceipt, numberOfExecutions: result as bigint };
   }
 
+  async estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<bigint> {
+    this.checkProtocolConfig();
+    const gas = await this.publicClient.estimateContractGas({
+      address: this.protocolConfig!.executionManager,
+      abi: executionManagerAbi,
+      functionName: 'executeBatch',
+      args: [indices, gasLimits, feeRecipient, checkIn],
+    });
+    return gas;
+  }
+
   async revokeSponsorship(index: bigint, options?: ContractCallOptions) : Promise<TransactionReceipt> {
     this.checkProtocolConfig();
     const { transactionReceipt } = await this.executeTransaction({

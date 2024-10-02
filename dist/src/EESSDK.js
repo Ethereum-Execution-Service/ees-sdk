@@ -318,6 +318,16 @@ class EESSDK {
         }, options);
         return { transactionReceipt, numberOfExecutions: result };
     }
+    async estimateBatchExecutionGas(indices, gasLimits, feeRecipient, checkIn) {
+        this.checkProtocolConfig();
+        const gas = await this.publicClient.estimateContractGas({
+            address: this.protocolConfig.executionManager,
+            abi: executionManager_1.executionManagerAbi,
+            functionName: 'executeBatch',
+            args: [indices, gasLimits, feeRecipient, checkIn],
+        });
+        return gas;
+    }
     async revokeSponsorship(index, options) {
         this.checkProtocolConfig();
         const { transactionReceipt } = await this.executeTransaction({
