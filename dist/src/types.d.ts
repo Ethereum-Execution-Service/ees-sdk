@@ -1,4 +1,4 @@
-import { SimulateContractParameters, WriteContractParameters, Address, Abi } from 'viem';
+import { Address, Abi } from 'viem';
 export interface Job {
     index: bigint;
     owner: `0x${string}`;
@@ -85,4 +85,15 @@ export interface ContractFunctionConfig {
     functionName: string;
     args?: readonly unknown[];
 }
-export type ContractCallOptions = Partial<Omit<SimulateContractParameters & WriteContractParameters, 'address' | 'abi' | 'functionName' | 'args' | 'account'>>;
+export type ContractCallOptions = {
+    simulate?: boolean;
+    value?: bigint;
+    gas?: bigint;
+} & ({
+    type?: 'legacy';
+    gasPrice?: bigint;
+} | {
+    type: 'eip1559';
+    maxFeePerGas?: bigint;
+    maxPriorityFeePerGas?: bigint;
+});

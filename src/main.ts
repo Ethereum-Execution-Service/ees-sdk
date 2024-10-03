@@ -1,5 +1,5 @@
 import { createWalletClient, createPublicClient, encodeAbiParameters, parseUnits, TransactionReceipt } from "viem";
-import { JobSpecification, Job } from "./types";
+import { JobSpecification, Job, ContractCallOptions } from "./types";
 import { publicClient, walletClient } from "../config";
 import { PublicClient, WalletClient } from "viem";
 import { EESSDK } from "./EESSDK";
@@ -57,13 +57,15 @@ async function main() {
   
 
   /*
-  await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((txReceipt: TransactionReceipt) => {
+  await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n, { simulate: false }).then((txReceipt: TransactionReceipt) => {
+    console.log(txReceipt);
+  });
+  
+ 
+  await eesSdk.stake({ simulate: true }).then((txReceipt: TransactionReceipt) => {
     console.log(txReceipt);
   });
   */
-  await eesSdk.stake().then((txReceipt: TransactionReceipt) => {
-    console.log(txReceipt);
-  });
   
   
   
@@ -72,6 +74,7 @@ async function main() {
     console.log(txReceipt);
   });
   */
+  
   //const currentEpoch: bigint = await eesSdk.getEpoch();
   //console.log("CURRENT EPOCH: ", currentEpoch);
 // get chain id

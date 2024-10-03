@@ -11,12 +11,11 @@ class EESSDK {
     constructor(publicClient, walletClient, simulateBeforeWrite = true) {
         this.publicClient = publicClient;
         this.walletClient = walletClient;
-        this.simulateBeforeWrite = simulateBeforeWrite;
     }
-    static async init(configProviderAddress, publicClient, walletClient, simulateBeforeWrite = true) {
+    static async init(configProviderAddress, publicClient, walletClient) {
         if (walletClient && walletClient.chain?.id !== publicClient.chain?.id)
             throw new Error('Chain ID mismatch between public client and wallet client.');
-        const instance = new EESSDK(publicClient, walletClient, simulateBeforeWrite);
+        const instance = new EESSDK(publicClient, walletClient);
         await instance.fetchAndSetConfig(configProviderAddress);
         return instance;
     }
@@ -146,7 +145,8 @@ class EESSDK {
     async executeTransaction(contractCall, options) {
         if (!this.walletClient)
             throw new Error('Wallet client not provided.');
-        if (this.simulateBeforeWrite) {
+        if (options?.simulate !== false) {
+            // Simulation logic
             const { request, result } = await this.publicClient.simulateContract({
                 ...contractCall,
                 chain: this.walletClient.chain,
@@ -154,20 +154,22 @@ class EESSDK {
                 ...options
             });
             if (!request)
-                throw new Error(`Failed to ${contractCall.functionName}.`);
+                throw new Error(`Failed to simulate ${contractCall.functionName}.`);
+            // After successful simulation, proceed with the actual transaction
             const txHash = await this.walletClient.writeContract(request);
             const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash: txHash });
             return { transactionReceipt, result };
         }
         else {
-            const result = await this.walletClient.writeContract({
+            // Direct write logic without simulation
+            const hash = await this.walletClient.writeContract({
                 ...contractCall,
                 chain: this.walletClient.chain,
                 account: this.walletClient.account,
                 ...options
             });
-            const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash: result });
-            return { transactionReceipt, result };
+            const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash });
+            return { transactionReceipt, result: hash };
         }
     }
     async createJob(jobSpecification, sponsor, sponsorSignature, hasSponsorship, index, options) {

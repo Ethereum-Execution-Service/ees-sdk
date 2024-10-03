@@ -1,4 +1,4 @@
-import { TransactionReceipt, PublicClient, WalletClient, parseAbiItem, decodeAbiParameters, WatchEventReturnType, Account, keccak256, toBytes, encodeAbiParameters, encodePacked, erc20Abi } from 'viem';
+import { TransactionReceipt, PublicClient, WalletClient, parseAbiItem, decodeAbiParameters, WatchEventReturnType, Account, keccak256, toBytes, encodeAbiParameters, encodePacked, erc20Abi, WriteContractParameters, SimulateContractParameters } from 'viem';
 import { Job, JobSpecification, RegularTimeInterval, FeeModuleInput, FeeCalculationMinimum, LinearAuction, ContractCallOptions, ProtocolConfig, ContractFunctionConfig } from './types';
 import { executionManagerAbi } from './abis/executionManager';
 import { jobRegistryAbi } from './abis/jobRegistry';
@@ -10,17 +10,15 @@ export class EESSDK {
   private publicClient: PublicClient;
   private walletClient: WalletClient | undefined;
   private protocolConfig: ProtocolConfig | undefined;
-  private simulateBeforeWrite: boolean;
 
   private constructor(publicClient: PublicClient, walletClient?: WalletClient, simulateBeforeWrite: boolean = true) {
     this.publicClient = publicClient;
     this.walletClient = walletClient;
-    this.simulateBeforeWrite = simulateBeforeWrite;
   }
 
-  static async init(configProviderAddress: `0x${string}`, publicClient: PublicClient, walletClient?: WalletClient, simulateBeforeWrite: boolean = true) : Promise<EESSDK> {
+  static async init(configProviderAddress: `0x${string}`, publicClient: PublicClient, walletClient?: WalletClient) : Promise<EESSDK> {
     if(walletClient && walletClient.chain?.id !== publicClient.chain?.id) throw new Error('Chain ID mismatch between public client and wallet client.');
-    const instance = new EESSDK(publicClient, walletClient, simulateBeforeWrite);
+    const instance = new EESSDK(publicClient, walletClient);
     await instance.fetchAndSetConfig(configProviderAddress);
     return instance;
   }
@@ -168,28 +166,32 @@ export class EESSDK {
   }
 
   private async executeTransaction(contractCall: ContractFunctionConfig, options?: ContractCallOptions): Promise<{ transactionReceipt: TransactionReceipt, result: unknown }> {
-    if(!this.walletClient) throw new Error('Wallet client not provided.');
+    if (!this.walletClient) throw new Error('Wallet client not provided.');
 
-    if (this.simulateBeforeWrite) {
+    if (options?.simulate !== false) {
+      // Simulation logic
       const { request, result } = await this.publicClient.simulateContract({
         ...contractCall,
         chain: this.walletClient.chain,
         account: this.walletClient.account as `0x${string}` | Account,
         ...options
       });
-      if(!request) throw new Error(`Failed to ${contractCall.functionName}.`);
+      if (!request) throw new Error(`Failed to simulate ${contractCall.functionName}.`);
+      
+      // After successful simulation, proceed with the actual transaction
       const txHash: `0x${string}` = await this.walletClient.writeContract(request);
       const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash: txHash });
       return { transactionReceipt, result };
     } else {
-      const result = await this.walletClient.writeContract({
+      // Direct write logic without simulation
+      const hash = await this.walletClient.writeContract({
         ...contractCall,
         chain: this.walletClient.chain,
         account: this.walletClient.account as `0x${string}` | Account,
         ...options
       });
-      const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash: result });
-      return { transactionReceipt, result };
+      const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash });
+      return { transactionReceipt, result: hash };
     }
   }
 

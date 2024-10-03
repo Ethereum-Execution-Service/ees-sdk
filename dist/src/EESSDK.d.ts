@@ -4,9 +4,8 @@ export declare class EESSDK {
     private publicClient;
     private walletClient;
     private protocolConfig;
-    private simulateBeforeWrite;
     private constructor();
-    static init(configProviderAddress: `0x${string}`, publicClient: PublicClient, walletClient?: WalletClient, simulateBeforeWrite?: boolean): Promise<EESSDK>;
+    static init(configProviderAddress: `0x${string}`, publicClient: PublicClient, walletClient?: WalletClient): Promise<EESSDK>;
     private fetchAndSetConfig;
     getAllowance(token: `0x${string}`, allower: `0x${string}`, spender: `0x${string}`): Promise<bigint>;
     getBalance(token: `0x${string}`, account: `0x${string}`): Promise<bigint>;

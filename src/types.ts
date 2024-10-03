@@ -96,4 +96,36 @@ export interface ContractFunctionConfig {
   args?: readonly unknown[];
 }
 
-export type ContractCallOptions = Partial<Omit<SimulateContractParameters & WriteContractParameters, 'address' | 'abi' | 'functionName' | 'args' | 'account'>>;
+/*
+type CommonExcludedFields = 'address' | 'abi' | 'functionName';
+
+export type ContractCallOptions = 
+  ({ simulate?: true } & Partial<Omit<SimulateContractParameters, CommonExcludedFields>>)
+  | ({ simulate: false } & Partial<Omit<WriteContractParameters, CommonExcludedFields>>)
+*/
+
+
+export type ContractCallOptions = {
+  simulate?: boolean;
+  value?: bigint;
+  gas?: bigint;
+} & (
+  | {
+      type?: 'legacy';
+      gasPrice?: bigint;
+    }
+  | {
+      type: 'eip1559';
+      maxFeePerGas?: bigint;
+      maxPriorityFeePerGas?: bigint;
+  }
+)
+
+/*
+export type ContractCallOptions = Partial<
+  Omit<SimulateContractParameters, 'address' | 'abi' | 'functionName' | 'args'> & 
+  Omit<WriteContractParameters, 'address' | 'abi' | 'functionName' | 'args'>
+> & {
+  simulate: boolean;
+};
+*/

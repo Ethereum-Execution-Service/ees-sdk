@@ -42,13 +42,15 @@ async function main() {
     });
     */
     /*
-    await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((txReceipt: TransactionReceipt) => {
+    await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n, { simulate: false }).then((txReceipt: TransactionReceipt) => {
+      console.log(txReceipt);
+    });
+    
+   
+    await eesSdk.stake({ simulate: true }).then((txReceipt: TransactionReceipt) => {
       console.log(txReceipt);
     });
     */
-    await eesSdk.stake().then((txReceipt) => {
-        console.log(txReceipt);
-    });
     /*
     await eesSdk.unstake().then((txReceipt: TransactionReceipt) => {
       console.log(txReceipt);
