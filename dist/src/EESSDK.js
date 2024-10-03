@@ -316,7 +316,7 @@ class EESSDK {
             functionName: 'executeBatch',
             args: [indices, gasLimits, feeRecipient, checkIn],
         }, options);
-        return { transactionReceipt, numberOfExecutions: result };
+        return { transactionReceipt, failedJobIndices: result };
     }
     async estimateBatchExecutionGas(indices, gasLimits, feeRecipient, checkIn) {
         this.checkProtocolConfig();

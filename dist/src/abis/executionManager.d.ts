@@ -164,9 +164,9 @@ export declare const executionManagerAbi: readonly [{
         readonly internalType: "bool";
     }];
     readonly outputs: readonly [{
-        readonly name: "numberOfExecutedJobs";
-        readonly type: "uint256";
-        readonly internalType: "uint256";
+        readonly name: "failedIndices";
+        readonly type: "uint256[]";
+        readonly internalType: "uint256[]";
     }];
     readonly stateMutability: "nonpayable";
 }, {

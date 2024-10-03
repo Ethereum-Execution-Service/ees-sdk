@@ -151,7 +151,15 @@ export declare const jobRegistryAbi: readonly [{
         readonly type: "address";
         readonly internalType: "address";
     }];
-    readonly outputs: readonly [];
+    readonly outputs: readonly [{
+        readonly name: "";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }, {
+        readonly name: "";
+        readonly type: "address";
+        readonly internalType: "address";
+    }];
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
@@ -165,6 +173,16 @@ export declare const jobRegistryAbi: readonly [{
         readonly name: "";
         readonly type: "address";
         readonly internalType: "contract IExecutionModule";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "exportConfig";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly name: "";
+        readonly type: "bytes";
+        readonly internalType: "bytes";
     }];
     readonly stateMutability: "view";
 }, {

@@ -117,9 +117,9 @@ export interface EESSDK {
    * @param gasLimits - An array of gas limits for each job.
    * @param feeRecipient - The address of the fee recipient.
    * @param checkIn - A boolean flag indicating whether to check in.
-   * @returns A promise that resolves to the a batch execution receipt containing transaction receipt and information from each execution.
+   * @returns A promise that resolves to an array of indices of the jobs where execution failed.
    */
-  executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<{ transactionReceipt: TransactionReceipt, numberOfExecutions: bigint }>;
+  executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<{ transactionReceipt: TransactionReceipt, failedJobIndices: bigint[] }>;
 
   /**
    * Estimates the gas for executing a batch of jobs in ExecutionManager.

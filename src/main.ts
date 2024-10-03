@@ -5,7 +5,7 @@ import { PublicClient, WalletClient } from "viem";
 import { EESSDK } from "./EESSDK";
 
 async function main() {
-  const configProviderAddress = "0x909E93FaF672723D56dD83563F247C9ae7d3Dc2b";
+  const configProviderAddress = "0xc5afE256B27332890B727264544b3D8167396B2A";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
   const jobSpecification: JobSpecification = {
@@ -54,15 +54,17 @@ async function main() {
     console.log(txReceipt);
   });
   */
+  
 
   /*
   await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((txReceipt: TransactionReceipt) => {
     console.log(txReceipt);
   });
+  */
   await eesSdk.stake().then((txReceipt: TransactionReceipt) => {
     console.log(txReceipt);
   });
-  */
+  
   
   
   /*
@@ -88,10 +90,11 @@ async function main() {
   console.log("SIGNATURE: ", secret);
   */
   
-  
+  /*
   await eesSdk.reveal("0x51de6cf657335f0a5664bc7483aec7d931beb895563fa2312546c22092da62de0c71c2660ee267b1b0ee0e0e7ec7a2b9ad5898dafe450f77151ebfdd61d090221b").then((transactionReceipt: TransactionReceipt) => {
     console.log(transactionReceipt);
   });
+  */
   
   
   

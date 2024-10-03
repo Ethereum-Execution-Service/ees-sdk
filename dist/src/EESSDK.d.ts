@@ -25,7 +25,7 @@ export declare class EESSDK {
     signFeeModuleInput(feeModuleInput: FeeModuleInput): Promise<`0x${string}`>;
     executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions): Promise<{
         transactionReceipt: TransactionReceipt;
-        numberOfExecutions: bigint;
+        failedJobIndices: bigint[];
     }>;
     estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean): Promise<bigint>;
     estimateExecutionGas(index: bigint, feeRecipient: `0x${string}`): Promise<bigint>;

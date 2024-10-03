@@ -4,7 +4,7 @@ const viem_1 = require("viem");
 const config_1 = require("../config");
 const EESSDK_1 = require("./EESSDK");
 async function main() {
-    const configProviderAddress = "0x909E93FaF672723D56dD83563F247C9ae7d3Dc2b";
+    const configProviderAddress = "0xc5afE256B27332890B727264544b3D8167396B2A";
     const eesSdk = await EESSDK_1.EESSDK.init(configProviderAddress, config_1.publicClient, config_1.walletClient);
     const jobSpecification = {
         nonce: 88805526045906062658843605009268256866115913838000966001699316491583730826117n,
@@ -45,10 +45,10 @@ async function main() {
     await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((txReceipt: TransactionReceipt) => {
       console.log(txReceipt);
     });
-    await eesSdk.stake().then((txReceipt: TransactionReceipt) => {
-      console.log(txReceipt);
-    });
     */
+    await eesSdk.stake().then((txReceipt) => {
+        console.log(txReceipt);
+    });
     /*
     await eesSdk.unstake().then((txReceipt: TransactionReceipt) => {
       console.log(txReceipt);
@@ -69,9 +69,11 @@ async function main() {
     const { transactionReceipt, secret }: { transactionReceipt: TransactionReceipt, secret: `0x${string}` } = await eesSdk.commit(3n);
     console.log("SIGNATURE: ", secret);
     */
-    await eesSdk.reveal("0x51de6cf657335f0a5664bc7483aec7d931beb895563fa2312546c22092da62de0c71c2660ee267b1b0ee0e0e7ec7a2b9ad5898dafe450f77151ebfdd61d090221b").then((transactionReceipt) => {
-        console.log(transactionReceipt);
+    /*
+    await eesSdk.reveal("0x51de6cf657335f0a5664bc7483aec7d931beb895563fa2312546c22092da62de0c71c2660ee267b1b0ee0e0e7ec7a2b9ad5898dafe450f77151ebfdd61d090221b").then((transactionReceipt: TransactionReceipt) => {
+      console.log(transactionReceipt);
     });
+    */
     /*
     await eesSdk.getAllowance(eesSdk.getProtocolConfig().stakingToken, walletClient.account?.address!, eesSdk.getProtocolConfig().executionManager).then((allowance: bigint) => {
       console.log(allowance);

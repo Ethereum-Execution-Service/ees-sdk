@@ -336,7 +336,7 @@ export class EESSDK {
     return signature;
   }
   
-  async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions) : Promise<{ transactionReceipt: TransactionReceipt, numberOfExecutions: bigint }> {
+  async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions) : Promise<{ transactionReceipt: TransactionReceipt, failedJobIndices: bigint[] }> {
     this.checkProtocolConfig();
     const { transactionReceipt, result } = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
@@ -345,7 +345,7 @@ export class EESSDK {
       args: [indices, gasLimits, feeRecipient, checkIn],
     }, options);
 
-    return { transactionReceipt, numberOfExecutions: result as bigint };
+    return { transactionReceipt, failedJobIndices: result as bigint[] };
   }
 
   async estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<bigint> {
