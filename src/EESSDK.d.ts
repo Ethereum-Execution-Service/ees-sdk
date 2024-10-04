@@ -1,5 +1,5 @@
 import { TransactionReceipt, PublicClient, WalletClient, WatchEventReturnType, Account } from 'viem';
-import { Job, JobSpecification, FeeModuleInput, FeeCalculationMinimum, ContractCallOptions, ProtocolConfig } from './types';
+import { Job, JobSpecification, FeeModuleInput, FeeCalculationMinimum, ContractCallOptions, ProtocolConfig, ExecutorInfo, CommitData, EpochInfo } from './types';
 
 /**
  * Interface of EESSDK.
@@ -109,6 +109,30 @@ export interface EESSDK {
    * @returns A promise that resolves to the generated signature.
    */
   signFeeModuleInput(feeModuleInput: FeeModuleInput) : Promise<`0x${string}`>;
+
+  /**
+   * Retrieves the executor info.
+   * @param executor - The address of the executor.
+   * @returns A promise that resolves to an ExecutorInfo object.
+   */
+  getExecutorInfo(executor: `0x${string}`) : Promise<ExecutorInfo>;
+
+
+  /**
+   * Retrieves the current epoch info with helper data.
+   * @returns A promise that resolves to an EpochInfo object.
+   */
+  getCurrentEpochInfo() : Promise<EpochInfo>;
+
+  /**
+   * Retrieves the commit data for each executor specified.
+   * @notice The returned array is in the same order as the input array.
+   * @notice If an executor has not committed, all fields will be 0.
+   * @param executors - An array of executor addresses.
+   * @returns A promise that resolves to an array of CommitData objects.
+   */
+  getCommitData(executors: `0x${string}`[]) : Promise<CommitData[]>;
+
 
   /**
    * Executes a batch of jobs.

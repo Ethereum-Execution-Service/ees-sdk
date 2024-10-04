@@ -5,7 +5,7 @@ import { PublicClient, WalletClient } from "viem";
 import { EESSDK } from "./EESSDK";
 
 async function main() {
-  const configProviderAddress = "0xc5afE256B27332890B727264544b3D8167396B2A";
+  const configProviderAddress = "0x08103BeE48e51FA0504e8C0d7bf4d96Dc5fB0dcb";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
   const jobSpecification: JobSpecification = {

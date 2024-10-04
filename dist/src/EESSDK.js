@@ -310,6 +310,60 @@ class EESSDK {
         });
         return signature;
     }
+    async getExecutorInfo(executors) {
+        this.checkProtocolConfig();
+        const data = await this.publicClient.readContract({
+            address: this.protocolConfig.querier,
+            abi: querier_1.querierAbi,
+            functionName: 'getExecutors',
+            args: [executors]
+        });
+        return data.map(obj => obj);
+    }
+    async getCurrentEpochInfo() {
+        this.checkProtocolConfig();
+        const data = await this.publicClient.readContract({
+            address: this.protocolConfig.querier,
+            abi: querier_1.querierAbi,
+            functionName: 'getCurrentEpochInfo'
+        });
+        const epochStartTime = data[1] - BigInt(this.protocolConfig.epochDuration);
+        const revealPhaseStartTime = epochStartTime + BigInt(this.protocolConfig.commitPhaseDuration);
+        const roundsStartTime = revealPhaseStartTime + BigInt(this.protocolConfig.revealPhaseDuration);
+        const roundPeriods = [];
+        const roundBufferPeriods = [];
+        for (let i = 0; i < this.protocolConfig.roundsPerEpoch; i++) {
+            const midTime = roundsStartTime + BigInt(this.protocolConfig.roundDuration) + BigInt(i) * (BigInt(this.protocolConfig.roundDuration) + BigInt(this.protocolConfig.roundBuffer));
+            roundPeriods.push([midTime - BigInt(this.protocolConfig.roundDuration), midTime]);
+            roundBufferPeriods.push([midTime, midTime + BigInt(this.protocolConfig.roundBuffer)]);
+        }
+        const epochInfo = {
+            epoch: data[0],
+            epochPeriod: [epochStartTime, data[1]],
+            seed: data[2],
+            numberOfActiveExecutors: data[3],
+            commitPhasePeriod: [epochStartTime, revealPhaseStartTime],
+            revealPhasePeriod: [revealPhaseStartTime, roundsStartTime],
+            roundPeriods: roundPeriods,
+            roundBufferPeriods: roundBufferPeriods,
+            slashingPhasePeriod: [data[1] - BigInt(this.protocolConfig.slashingDuration), data[1]],
+            selectedExecutors: data[4]
+        };
+        return epochInfo;
+    }
+    async getCommitData(executors) {
+        this.checkProtocolConfig();
+        const data = await this.publicClient.readContract({
+            address: this.protocolConfig.querier,
+            abi: querier_1.querierAbi,
+            functionName: 'getCommitData',
+            args: [executors]
+        });
+        return executors.map((executor, index) => ({
+            executor,
+            ...data[index]
+        }));
+    }
     async executeBatch(indices, gasLimits, feeRecipient, checkIn, options) {
         this.checkProtocolConfig();
         const { transactionReceipt, result } = await this.executeTransaction({

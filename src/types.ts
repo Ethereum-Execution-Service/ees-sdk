@@ -1,4 +1,4 @@
-import { SimulateContractParameters, WriteContractParameters, Address, Abi } from 'viem';
+import { Address, Abi } from 'viem';
 
 export interface Job {
   index: bigint;
@@ -18,6 +18,36 @@ export interface Job {
   jobIsExpired: boolean,
   jobInExecutionWindow: boolean,
   nextExecution: bigint
+}
+
+export interface EpochInfo {
+  epoch: bigint,
+  epochPeriod: [bigint, bigint],
+  seed: `0x${string}`,
+  numberOfActiveExecutors: number,
+  commitPhasePeriod: [bigint, bigint],
+  revealPhasePeriod: [bigint, bigint],
+  roundPeriods: [bigint, bigint][],
+  roundBufferPeriods: [bigint, bigint][],
+  slashingPhasePeriod: [bigint, bigint],
+  selectedExecutors: `0x${string}`[]
+}
+
+export interface ExecutorInfo {
+  balance: bigint;
+  active: boolean;
+  initialized: boolean;
+  arrayIndex: number;
+  lastCheckinRound: number;
+  lastCheckinEpoch: bigint;
+  stakingTimestamp: bigint;
+}
+
+export interface CommitData {
+  executor: `0x${string}`,
+  commitment: `0x${string}`,
+  epoch: bigint,
+  revealed: boolean
 }
 
 export type FeeCalculationMinimum = {
@@ -79,7 +109,6 @@ export interface ProtocolConfig {
   epochDuration: number
 }
 
-
 export interface FeeModuleInput {
   nonce: bigint,
   deadline: bigint,
@@ -96,15 +125,6 @@ export interface ContractFunctionConfig {
   args?: readonly unknown[];
 }
 
-/*
-type CommonExcludedFields = 'address' | 'abi' | 'functionName';
-
-export type ContractCallOptions = 
-  ({ simulate?: true } & Partial<Omit<SimulateContractParameters, CommonExcludedFields>>)
-  | ({ simulate: false } & Partial<Omit<WriteContractParameters, CommonExcludedFields>>)
-*/
-
-
 export type ContractCallOptions = {
   simulate?: boolean;
   value?: bigint;
@@ -120,12 +140,3 @@ export type ContractCallOptions = {
       maxPriorityFeePerGas?: bigint;
   }
 )
-
-/*
-export type ContractCallOptions = Partial<
-  Omit<SimulateContractParameters, 'address' | 'abi' | 'functionName' | 'args'> & 
-  Omit<WriteContractParameters, 'address' | 'abi' | 'functionName' | 'args'>
-> & {
-  simulate: boolean;
-};
-*/

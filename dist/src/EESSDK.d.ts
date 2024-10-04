@@ -1,5 +1,5 @@
 import { TransactionReceipt, PublicClient, WalletClient, WatchEventReturnType } from 'viem';
-import { Job, JobSpecification, FeeModuleInput, FeeCalculationMinimum, ContractCallOptions, ProtocolConfig } from './types';
+import { Job, JobSpecification, FeeModuleInput, FeeCalculationMinimum, ContractCallOptions, ProtocolConfig, ExecutorInfo, EpochInfo, CommitData } from './types';
 export declare class EESSDK {
     private publicClient;
     private walletClient;
@@ -22,6 +22,9 @@ export declare class EESSDK {
     watchDeletedJobs(application: `0x${string}`, onDeletedJob: (index: bigint) => any): WatchEventReturnType;
     signJobSpecification(jobSpecification: JobSpecification): Promise<`0x${string}`>;
     signFeeModuleInput(feeModuleInput: FeeModuleInput): Promise<`0x${string}`>;
+    getExecutorInfo(executors: `0x${string}`[]): Promise<ExecutorInfo[]>;
+    getCurrentEpochInfo(): Promise<EpochInfo>;
+    getCommitData(executors: `0x${string}`[]): Promise<CommitData[]>;
     executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions): Promise<{
         transactionReceipt: TransactionReceipt;
         failedJobIndices: bigint[];

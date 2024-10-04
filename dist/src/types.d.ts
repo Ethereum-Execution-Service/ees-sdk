@@ -18,6 +18,33 @@ export interface Job {
     jobInExecutionWindow: boolean;
     nextExecution: bigint;
 }
+export interface EpochInfo {
+    epoch: bigint;
+    epochPeriod: [bigint, bigint];
+    seed: `0x${string}`;
+    numberOfActiveExecutors: number;
+    commitPhasePeriod: [bigint, bigint];
+    revealPhasePeriod: [bigint, bigint];
+    roundPeriods: [bigint, bigint][];
+    roundBufferPeriods: [bigint, bigint][];
+    slashingPhasePeriod: [bigint, bigint];
+    selectedExecutors: `0x${string}`[];
+}
+export interface ExecutorInfo {
+    balance: bigint;
+    active: boolean;
+    initialized: boolean;
+    arrayIndex: number;
+    lastCheckinRound: number;
+    lastCheckinEpoch: bigint;
+    stakingTimestamp: bigint;
+}
+export interface CommitData {
+    executor: `0x${string}`;
+    commitment: `0x${string}`;
+    epoch: bigint;
+    revealed: boolean;
+}
 export type FeeCalculationMinimum = {
     feeModule: LinearAuction;
     executionWindow: number;

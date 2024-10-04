@@ -135,16 +135,6 @@ export declare const executionManagerAbi: readonly [{
     readonly stateMutability: "view";
 }, {
     readonly type: "function";
-    readonly name: "epochRequested";
-    readonly inputs: readonly [];
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly type: "bool";
-        readonly internalType: "bool";
-    }];
-    readonly stateMutability: "view";
-}, {
-    readonly type: "function";
     readonly name: "executeBatch";
     readonly inputs: readonly [{
         readonly name: "_indices";
@@ -169,16 +159,6 @@ export declare const executionManagerAbi: readonly [{
         readonly internalType: "uint256[]";
     }];
     readonly stateMutability: "nonpayable";
-}, {
-    readonly type: "function";
-    readonly name: "executionInRound";
-    readonly inputs: readonly [];
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly type: "bool";
-        readonly internalType: "bool";
-    }];
-    readonly stateMutability: "view";
 }, {
     readonly type: "function";
     readonly name: "executorInfo";
@@ -233,16 +213,6 @@ export declare const executionManagerAbi: readonly [{
     readonly inputs: readonly [];
     readonly outputs: readonly [];
     readonly stateMutability: "nonpayable";
-}, {
-    readonly type: "function";
-    readonly name: "jobRegistry";
-    readonly inputs: readonly [];
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly type: "address";
-        readonly internalType: "address";
-    }];
-    readonly stateMutability: "view";
 }, {
     readonly type: "function";
     readonly name: "numberOfActiveExecutors";

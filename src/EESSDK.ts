@@ -1,5 +1,5 @@
-import { TransactionReceipt, PublicClient, WalletClient, parseAbiItem, decodeAbiParameters, WatchEventReturnType, Account, keccak256, toBytes, encodeAbiParameters, encodePacked, erc20Abi, WriteContractParameters, SimulateContractParameters } from 'viem';
-import { Job, JobSpecification, RegularTimeInterval, FeeModuleInput, FeeCalculationMinimum, LinearAuction, ContractCallOptions, ProtocolConfig, ContractFunctionConfig } from './types';
+import { TransactionReceipt, PublicClient, WalletClient, parseAbiItem, decodeAbiParameters, WatchEventReturnType, Account, keccak256, encodePacked, erc20Abi } from 'viem';
+import { Job, JobSpecification, RegularTimeInterval, FeeModuleInput, FeeCalculationMinimum, LinearAuction, ContractCallOptions, ProtocolConfig, ContractFunctionConfig, ExecutorInfo, EpochInfo, CommitData } from './types';
 import { executionManagerAbi } from './abis/executionManager';
 import { jobRegistryAbi } from './abis/jobRegistry';
 import { querierAbi } from './abis/querier';
@@ -336,6 +336,67 @@ export class EESSDK {
       },
     });
     return signature;
+  }
+
+  async getExecutorInfo(executors: `0x${string}`[]): Promise<ExecutorInfo[]> {
+    this.checkProtocolConfig();
+    const data = await this.publicClient.readContract({
+      address: this.protocolConfig!.querier,
+      abi: querierAbi,
+      functionName: 'getExecutors',
+      args: [executors]
+    });
+    return data.map(obj => obj as ExecutorInfo);
+  }
+
+  async getCurrentEpochInfo() : Promise<EpochInfo> {
+    this.checkProtocolConfig();
+    const data = await this.publicClient.readContract({
+      address: this.protocolConfig!.querier,
+      abi: querierAbi,
+      functionName: 'getCurrentEpochInfo'
+    });
+
+    const epochStartTime: bigint = data[1] - BigInt(this.protocolConfig!.epochDuration);
+    const revealPhaseStartTime: bigint = epochStartTime + BigInt(this.protocolConfig!.commitPhaseDuration);
+    const roundsStartTime: bigint = revealPhaseStartTime + BigInt(this.protocolConfig!.revealPhaseDuration);
+
+    const roundPeriods: [bigint, bigint][] = [];
+    const roundBufferPeriods: [bigint, bigint][] = [];
+
+    for(let i = 0; i < this.protocolConfig!.roundsPerEpoch; i++) {
+      const midTime: bigint = roundsStartTime + BigInt(this.protocolConfig!.roundDuration) + BigInt(i) * (BigInt(this.protocolConfig!.roundDuration) + BigInt(this.protocolConfig!.roundBuffer));
+      roundPeriods.push([midTime - BigInt(this.protocolConfig!.roundDuration), midTime]);
+      roundBufferPeriods.push([midTime, midTime + BigInt(this.protocolConfig!.roundBuffer)]);
+    }
+    const epochInfo: EpochInfo = {
+      epoch: data[0],
+      epochPeriod: [epochStartTime, data[1]],
+      seed: data[2],
+      numberOfActiveExecutors: data[3],
+      commitPhasePeriod: [epochStartTime, revealPhaseStartTime],
+      revealPhasePeriod: [revealPhaseStartTime, roundsStartTime],
+      roundPeriods: roundPeriods,
+      roundBufferPeriods: roundBufferPeriods,
+      slashingPhasePeriod: [data[1] - BigInt(this.protocolConfig!.slashingDuration), data[1]],
+      selectedExecutors: data[4] as `0x${string}`[]
+    }
+    return epochInfo;
+  }
+
+  async getCommitData(executors: `0x${string}`[]) : Promise<CommitData[]> {
+    this.checkProtocolConfig();
+    const data = await this.publicClient.readContract({
+      address: this.protocolConfig!.querier,
+      abi: querierAbi,
+      functionName: 'getCommitData',
+      args: [executors]
+    });
+    
+    return executors.map((executor, index) => ({
+      executor,
+      ...data[index]
+    }));
   }
   
   async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions) : Promise<{ transactionReceipt: TransactionReceipt, failedJobIndices: bigint[] }> {
