@@ -50,5 +50,8 @@ export declare class EESSDK {
     slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions): Promise<TransactionReceipt>;
     slashCommitter(executor: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
     getEpoch(): Promise<bigint>;
+    jobIsExpired(job: Job): boolean;
+    jobInExecutionWindow(job: Job): boolean;
+    jobIsDeleted(job: Job): boolean;
     private formatJobData;
 }

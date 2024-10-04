@@ -15,8 +15,6 @@ export interface Job {
   feeModuleCode: `0x${string}`,
   executionModule: RegularTimeInterval,
   feeModule: LinearAuction,
-  expired: boolean,
-  inExecutionWindow: boolean,
   nextExecution: bigint
 }
 

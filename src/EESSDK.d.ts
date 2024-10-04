@@ -267,4 +267,26 @@ export interface EESSDK {
    * @returns A promise that resolves to a TransactionReceipt object.
    */
   slashCommitter(executor: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
+
+
+  /**
+   * Checks if a job is expired.
+   * @param job - The job to check.
+   * @returns A boolean indicating if the job is expired.
+   */
+  jobIsExpired(job: Job) : boolean;
+
+  /**
+   * Checks if a job is in the execution window.
+   * @param job - The job to check.
+   * @returns A boolean indicating if the job is in the execution window.
+   */
+  jobInExecutionWindow(job: Job) : boolean;
+
+  /**
+   * Checks if a job is deleted.
+   * @param job - The job to check.
+   * @returns A boolean indicating if the job is deleted.
+   */
+  jobIsDeleted(job: Job) : boolean;
 }

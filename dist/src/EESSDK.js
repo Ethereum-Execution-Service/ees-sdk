@@ -533,6 +533,17 @@ class EESSDK {
         });
         return epoch;
     }
+    jobIsExpired(job) {
+        const currentTime = BigInt(Math.floor(Date.now() / 1000));
+        return currentTime >= job.nextExecution + BigInt(job.executionWindow);
+    }
+    jobInExecutionWindow(job) {
+        const currentTime = BigInt(Math.floor(Date.now() / 1000));
+        return currentTime >= job.nextExecution && currentTime < job.nextExecution + BigInt(job.executionWindow);
+    }
+    jobIsDeleted(job) {
+        return job.owner === '0x0000000000000000000000000000000000000000';
+    }
     formatJobData(index, jobData) {
         let executionModule;
         let nextExecution = 0n;
@@ -570,8 +581,6 @@ class EESSDK {
             feeModuleCode: jobData.feeModule,
             executionModule: executionModule,
             feeModule: feeModule,
-            expired: jobData.jobIsExpired,
-            inExecutionWindow: jobData.jobInExecutionWindow,
             nextExecution: nextExecution
         };
         return job;
