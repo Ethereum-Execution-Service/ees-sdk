@@ -651,8 +651,8 @@ export class EESSDK {
       feeModuleCode: jobData.feeModule,
       executionModule: executionModule!,
       feeModule: feeModule!,
-      jobIsExpired: jobData.jobIsExpired,
-      jobInExecutionWindow: jobData.jobInExecutionWindow,
+      expired: jobData.jobIsExpired,
+      inExecutionWindow: jobData.jobInExecutionWindow,
       nextExecution: nextExecution
     }
     return job;
