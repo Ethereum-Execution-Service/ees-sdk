@@ -349,7 +349,7 @@ export class EESSDK {
     return data.map(obj => obj as ExecutorInfo);
   }
 
-  async getCurrentEpochInfo() : Promise<EpochInfo> {
+  async getEpochInfo() : Promise<EpochInfo> {
     this.checkProtocolConfig();
     const data = await this.publicClient.readContract({
       address: this.protocolConfig!.querier,

@@ -23,7 +23,7 @@ export declare class EESSDK {
     signJobSpecification(jobSpecification: JobSpecification): Promise<`0x${string}`>;
     signFeeModuleInput(feeModuleInput: FeeModuleInput): Promise<`0x${string}`>;
     getExecutorInfo(executors: `0x${string}`[]): Promise<ExecutorInfo[]>;
-    getCurrentEpochInfo(): Promise<EpochInfo>;
+    getEpochInfo(): Promise<EpochInfo>;
     getCommitData(executors: `0x${string}`[]): Promise<CommitData[]>;
     executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions): Promise<{
         transactionReceipt: TransactionReceipt;

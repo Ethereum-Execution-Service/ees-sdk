@@ -122,7 +122,7 @@ export interface EESSDK {
    * Retrieves the current epoch info with helper data.
    * @returns A promise that resolves to an EpochInfo object.
    */
-  getCurrentEpochInfo() : Promise<EpochInfo>;
+  getEpochInfo() : Promise<EpochInfo>;
 
   /**
    * Retrieves the commit data for each executor specified.

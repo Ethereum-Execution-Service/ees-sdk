@@ -1,2 +1,2 @@
 export { EESSDK } from './EESSDK';
-export { Job, RegularTimeInterval, LinearAuction, JobSpecification, FeeModuleInput } from './types';
+export { Job, RegularTimeInterval, LinearAuction, JobSpecification, FeeModuleInput, EpochInfo, ExecutorInfo } from './types';

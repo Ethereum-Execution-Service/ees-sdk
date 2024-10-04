@@ -320,7 +320,7 @@ class EESSDK {
         });
         return data.map(obj => obj);
     }
-    async getCurrentEpochInfo() {
+    async getEpochInfo() {
         this.checkProtocolConfig();
         const data = await this.publicClient.readContract({
             address: this.protocolConfig.querier,
