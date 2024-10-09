@@ -5,23 +5,37 @@ export declare const configProviderAbi: readonly [{
         readonly type: "address";
         readonly internalType: "contract JobRegistry";
     }, {
-        readonly name: "_executionManager";
+        readonly name: "_coordinator";
         readonly type: "address";
-        readonly internalType: "contract ExecutionManager";
+        readonly internalType: "contract Coordinator";
     }, {
         readonly name: "_querier";
         readonly type: "address";
         readonly internalType: "contract Querier";
+    }, {
+        readonly name: "_batchSlasher";
+        readonly type: "address";
+        readonly internalType: "contract BatchSlasher";
     }];
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
-    readonly name: "executionManager";
+    readonly name: "batchSlasher";
     readonly inputs: readonly [];
     readonly outputs: readonly [{
         readonly name: "";
         readonly type: "address";
-        readonly internalType: "contract ExecutionManager";
+        readonly internalType: "contract BatchSlasher";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "coordinator";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly name: "";
+        readonly type: "address";
+        readonly internalType: "contract Coordinator";
     }];
     readonly stateMutability: "view";
 }, {

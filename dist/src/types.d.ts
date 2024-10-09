@@ -76,6 +76,7 @@ export interface ProtocolConfig {
     jobRegistry: `0x${string}`;
     executionManager: `0x${string}`;
     querier: `0x${string}`;
+    batchSlasher: `0x${string}`;
     executionGasOverhead: bigint;
     executionModulesLength: bigint;
     feeModulesLength: bigint;

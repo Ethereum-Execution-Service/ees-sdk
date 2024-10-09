@@ -4,7 +4,7 @@ const viem_1 = require("viem");
 const config_1 = require("../config");
 const EESSDK_1 = require("./EESSDK");
 async function main() {
-    const configProviderAddress = "0x08103BeE48e51FA0504e8C0d7bf4d96Dc5fB0dcb";
+    const configProviderAddress = "0xCf1C470C4dbd95d952913bF66Ce47625F0a93b50";
     const eesSdk = await EESSDK_1.EESSDK.init(configProviderAddress, config_1.publicClient, config_1.walletClient);
     const jobSpecification = {
         nonce: 88805526045906062658843605009268256866115913838000966001699316491583730826117n,

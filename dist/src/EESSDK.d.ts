@@ -49,6 +49,7 @@ export declare class EESSDK {
     reveal(secret: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
     slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions): Promise<TransactionReceipt>;
     slashCommitter(executor: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
+    batchSlash(committerExecutors: `0x${string}`[], inactiveExecutors: `0x${string}`[], rounds: number[], recipient: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
     getEpoch(): Promise<bigint>;
     jobIsExpired(job: Job): boolean;
     jobInExecutionWindow(job: Job): boolean;

@@ -268,6 +268,19 @@ export interface EESSDK {
    */
   slashCommitter(executor: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
 
+  /**
+   * Slashes multiple committers in the execution manager.
+   * @throws An error if the class was not initialized with a publicClient and walletClient.
+   * @notice inactiveExecugtors and rounds must have same length, otherwise the transaction will revert.
+   * @param committerExecutors - An array of addresses of the committers to slash.
+   * @param inactiveExecutors - An array of addresses of the inactive executors to slash.
+   * @param rounds - An array of round numbers to slash.
+   * @param recipient - The address of the recipient.
+   * @param options - Optional contract call options.
+   * @returns A promise that resolves to a TransactionReceipt object.
+   */
+  batchSlash(committerExecutors: `0x${string}`[], inactiveExecutors: `0x${string}`[], rounds: number[], recipient: `0x${string}`, options?: ContractCallOptions) : Promise<TransactionReceipt>;
+
 
   /**
    * Checks if a job is expired.
