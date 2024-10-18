@@ -81,9 +81,10 @@ export interface EESSDK {
    * @param sponsorSignature - The EIP-712 sponsor signature of jobSpecification.
    * @param hasSponsorship - A boolean flag indicating if the job is created with a sponsorship.
    * @param index - The index of the job.
-   * @returns A promise that resolves to a TransactionReceipt object.
+   * @param options - Optional contract call options.
+   * @returns A promise that resolves to an object containing the transaction hash optionally receipt and job index if waitForReceipt is set true in options..
    */
-  createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint) : Promise<TransactionReceipt>;
+  createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; jobIndex?: bigint }>;
 
   /**
    * Deletes a job.
@@ -137,13 +138,14 @@ export interface EESSDK {
   /**
    * Executes a batch of jobs.
    * @throws An error if the class was not initialized with a publicClient and walletClient.
-   * @param jobIndices - An array of indices of jobs to execute.
+   * @param indices - An array of indices of jobs to execute.
    * @param gasLimits - An array of gas limits for each job.
    * @param feeRecipient - The address of the fee recipient.
    * @param checkIn - A boolean flag indicating whether to check in.
-   * @returns A promise that resolves to an array of indices of the jobs where execution failed.
+   * @param options - Optional contract call options.
+   * @returns A promise that resolves to an object containing the transaction hash and optionally receipt and failed job indices if waitForReceipt is set true in options.
    */
-  executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<{ transactionReceipt: TransactionReceipt, failedJobIndices: bigint[] }>;
+  executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }>;
 
   /**
    * Estimates the gas for executing a batch of jobs in ExecutionManager.

@@ -1,4 +1,4 @@
-import { TransactionReceipt, PublicClient, WalletClient, parseAbiItem, decodeAbiParameters, WatchEventReturnType, Account, keccak256, encodePacked, erc20Abi } from 'viem';
+import { TransactionReceipt, PublicClient, WalletClient, parseAbiItem, decodeAbiParameters, WatchEventReturnType, Account, keccak256, encodePacked, erc20Abi, toBytes } from 'viem';
 import { Job, JobSpecification, RegularTimeInterval, FeeModuleInput, FeeCalculationMinimum, LinearAuction, ContractCallOptions, ProtocolConfig, ContractFunctionConfig, ExecutorInfo, EpochInfo, CommitData } from './types';
 import { coordinatorAbi } from './abis/coordinator';
 import { jobRegistryAbi } from './abis/jobRegistry';
@@ -168,12 +168,14 @@ export class EESSDK {
     return jobs;
   }
 
-  private async executeTransaction(contractCall: ContractFunctionConfig, options?: ContractCallOptions): Promise<{ transactionReceipt: TransactionReceipt, result: unknown }> {
+  private async executeTransaction(contractCall: ContractFunctionConfig, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; }> {
     if (!this.walletClient) throw new Error('Wallet client not provided.');
+
+    let txHash: `0x${string}`;
 
     if (options?.simulate !== false) {
       // Simulation logic
-      const { request, result } = await this.publicClient.simulateContract({
+      const { request } = await this.publicClient.simulateContract({
         ...contractCall,
         chain: this.walletClient.chain,
         account: this.walletClient.account as `0x${string}` | Account,
@@ -182,42 +184,65 @@ export class EESSDK {
       if (!request) throw new Error(`Failed to simulate ${contractCall.functionName}.`);
       
       // After successful simulation, proceed with the actual transaction
-      const txHash: `0x${string}` = await this.walletClient.writeContract(request);
-      const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash: txHash });
-      return { transactionReceipt, result };
+      txHash = await this.walletClient.writeContract(request);
     } else {
       // Direct write logic without simulation
-      const hash = await this.walletClient.writeContract({
+      txHash = await this.walletClient.writeContract({
         ...contractCall,
         chain: this.walletClient.chain,
         account: this.walletClient.account as `0x${string}` | Account,
         ...options
       });
-      const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash });
-      return { transactionReceipt, result: hash };
+    }
+    
+    if (options?.waitForReceipt !== false) {
+      const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash: txHash });
+      return { transactionHash: txHash, transactionReceipt };
+    } else {
+      return { transactionHash: txHash };
     }
   }
 
-  async createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; jobIndex?: bigint }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.jobRegistry,
       abi: jobRegistryAbi,
       functionName: 'createJob',
       args: [jobSpecification as { nonce: bigint; deadline: bigint; application: `0x${string}`; executionWindow: number; maxExecutions: number; inactiveGracePeriod: number; ignoreAppRevert: boolean; executionModule: `0x${string}`; feeModule: `0x${string}`; executionModuleInput: `0x${string}`; feeModuleInput: `0x${string}`; applicationInput: `0x${string}`}, sponsor, sponsorSignature, hasSponsorship, index],
     }, options);
-    return transactionReceipt;
+
+    let jobIndex: bigint | undefined;
+
+    if (result.transactionReceipt) {
+      // Find the JobCreated event and extract the index
+      const jobCreatedEvent = result.transactionReceipt.logs
+        .find(log => 
+          log.address.toLowerCase() === this.protocolConfig!.jobRegistry.toLowerCase() &&
+          log.topics[0] === keccak256(toBytes('JobCreated(uint256,address,address,bool)'))
+        );
+
+      if (jobCreatedEvent && jobCreatedEvent.topics[1]) {
+        jobIndex = BigInt(jobCreatedEvent.topics[1]);
+      }
+    }
+
+    return {
+      transactionHash: result.transactionHash,
+      transactionReceipt: result.transactionReceipt,
+      jobIndex
+    };
   }
 
-  async deleteJob(index: bigint, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async deleteJob(index: bigint, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.jobRegistry,
       abi: jobRegistryAbi,
       functionName: 'deleteJob',
       args: [index],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
   watchCreatedJobs(application: `0x${string}`, onCreatedJob: (index: bigint) => any) : WatchEventReturnType {
@@ -287,6 +312,9 @@ export class EESSDK {
           { name: 'deadline', type: 'uint256' },
           { name: 'application', type: 'address' },
           { name: 'executionWindow', type: 'uint32' },
+          { name: 'maxExecutions', type: 'uint48' },
+          { name: 'inactiveGracePeriod', type: 'uint40' },
+          { name: 'ignoreAppRevert', type: 'bool' },
           { name: 'executionModule', type: 'bytes1'},
           { name: 'feeModule', type: 'bytes1'},
           { name: 'executionModuleInputHash', type: 'bytes32' },
@@ -300,6 +328,9 @@ export class EESSDK {
         deadline: jobSpecification.deadline,
         application: jobSpecification.application,
         executionWindow: jobSpecification.executionWindow,
+        maxExecutions: jobSpecification.maxExecutions,
+        inactiveGracePeriod: jobSpecification.inactiveGracePeriod,
+        ignoreAppRevert: jobSpecification.ignoreAppRevert,
         executionModule: jobSpecification.executionModule,
         feeModule: jobSpecification.feeModule,
         executionModuleInputHash: keccak256(jobSpecification.executionModuleInput),
@@ -402,16 +433,35 @@ export class EESSDK {
     }));
   }
   
-  async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions) : Promise<{ transactionReceipt: TransactionReceipt, failedJobIndices: bigint[] }> {
+  async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }> {
     this.checkProtocolConfig();
-    const { transactionReceipt, result } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'executeBatch',
       args: [indices, gasLimits, feeRecipient, checkIn],
     }, options);
 
-    return { transactionReceipt, failedJobIndices: result as bigint[] };
+    let failedIndices: bigint[] | undefined;
+
+    if (result.transactionReceipt) {
+      // Find the BatchExecution event and extract the failedIndices
+      const batchExecutionEvent = result.transactionReceipt.logs
+        .find(log => 
+          log.address.toLowerCase() === this.protocolConfig!.executionManager.toLowerCase() &&
+          log.topics[0] === keccak256(toBytes('BatchExecution(uint256[])'))
+        );
+
+      if (batchExecutionEvent && batchExecutionEvent.data) {
+        failedIndices = [...decodeAbiParameters([{ type: 'uint256[]' }], batchExecutionEvent.data)[0]];
+      }
+    }
+
+    return { 
+      transactionHash: result.transactionHash, 
+      transactionReceipt: result.transactionReceipt,
+      failedIndices 
+    };
   }
 
   async estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<bigint> {
@@ -437,37 +487,48 @@ export class EESSDK {
     return gas;
   }
 
-  async revokeSponsorship(index: bigint, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async revokeSponsorship(index: bigint, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.jobRegistry,
       abi: jobRegistryAbi,
       functionName: 'revokeSponsorship',
       args: [index],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async approveFeeToken(token: `0x${string}`, amount: bigint, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async approveFeeToken(token: `0x${string}`, amount: bigint, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: token,
       abi: erc20Abi,
       functionName: 'approve',
       args: [this.protocolConfig!.jobRegistry, amount],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async approveStakingToken(amount: bigint, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async approveAppToken(application: `0x${string}`,token: `0x${string}`, amount: bigint, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
+      address: token,
+      abi: erc20Abi,
+      functionName: 'approve',
+      args: [application, amount],
+    }, options);
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
+  }
+
+  async approveStakingToken(amount: bigint, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
+    this.checkProtocolConfig();
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.stakingToken,
       abi: erc20Abi,
       functionName: 'approve',
       args: [this.protocolConfig!.executionManager, amount],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
   async calculateCurrentFee<T extends FeeCalculationMinimum>(job: T) : Promise<{ fee: bigint; token: `0x${string}` } | null> {
@@ -485,48 +546,48 @@ export class EESSDK {
     return null;
   }
 
-  async initiateEpoch(options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async initiateEpoch(options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'initiateEpoch',
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async stake(options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async stake(options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'stake',
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async unstake(options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async unstake(options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'unstake',
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async topup(amount: bigint, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async topup(amount: bigint, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'topup',
       args: [amount],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async commit(epoch: bigint, options?: ContractCallOptions) : Promise<{ transactionReceipt: TransactionReceipt, secret: `0x${string}` }> {
+  async commit(epoch: bigint, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; secret: `0x${string}` }> {
     this.checkProtocolConfig();
     const msgHash = keccak256(
       encodePacked(['uint192', 'uint256'], [epoch, BigInt(this.publicClient.chain?.id!)])
@@ -537,7 +598,7 @@ export class EESSDK {
       message: { raw: msgHash },
     });
 
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'commit',
@@ -545,53 +606,54 @@ export class EESSDK {
     }, options);
 
     return {
-      transactionReceipt,
+      transactionHash: result.transactionHash,
+      transactionReceipt: result.transactionReceipt,
       secret: signature
     };
   }
 
-  async reveal(secret: `0x${string}`, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async reveal(secret: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'reveal',
       args: [secret],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'slashInactiveExecutor',
       args: [executor, round],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async slashCommitter(executor: `0x${string}`, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async slashCommitter(executor: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.executionManager,
       abi: coordinatorAbi,
       functionName: 'slashCommitter',
       args: [executor],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async batchSlash(committerExecutors: `0x${string}`[], inactiveExecutors: `0x${string}`[], rounds: number[], recipient: `0x${string}`, options?: ContractCallOptions) : Promise<TransactionReceipt> {
+  async batchSlash(committerExecutors: `0x${string}`[], inactiveExecutors: `0x${string}`[], rounds: number[], recipient: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
-    const { transactionReceipt } = await this.executeTransaction({
+    const result = await this.executeTransaction({
       address: this.protocolConfig!.batchSlasher,
       abi: batchSlasherAbi,
       functionName: 'batchSlash',
       args: [committerExecutors, inactiveExecutors, rounds, recipient],
     }, options);
-    return transactionReceipt;
+    return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
   async getEpoch() : Promise<bigint> {
