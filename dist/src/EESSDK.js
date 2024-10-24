@@ -354,8 +354,6 @@ class EESSDK {
             abi: querier_1.querierAbi,
             functionName: 'getCurrentEpochInfo'
         });
-        console.log("epoch duration: ", this.protocolConfig.epochDuration);
-        console.log("config", this.protocolConfig);
         const epochStartTime = data[1] - BigInt(this.protocolConfig.epochDuration);
         const revealPhaseStartTime = epochStartTime + BigInt(this.protocolConfig.commitPhaseDuration);
         const roundsStartTime = revealPhaseStartTime + BigInt(this.protocolConfig.revealPhaseDuration);

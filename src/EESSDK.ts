@@ -391,9 +391,6 @@ export class EESSDK {
       functionName: 'getCurrentEpochInfo'
     });
 
-    console.log("epoch duration: ", this.protocolConfig!.epochDuration);
-    console.log("config", this.protocolConfig);
-
     const epochStartTime: bigint = data[1] - BigInt(this.protocolConfig!.epochDuration);
     const revealPhaseStartTime: bigint = epochStartTime + BigInt(this.protocolConfig!.commitPhaseDuration);
     const roundsStartTime: bigint = revealPhaseStartTime + BigInt(this.protocolConfig!.revealPhaseDuration);
