@@ -11,14 +11,16 @@ const chains_1 = require("viem/chains");
 dotenv_1.default.config();
 const { PRIVATE_KEY, ALCHEMY_RPC_URL } = process.env;
 exports.publicClient = (0, viem_1.createPublicClient)({
+    /*
     batch: {
-        multicall: true,
+      multicall: true,
     },
+    */
     chain: chains_1.baseSepolia,
-    transport: (0, viem_1.http)()
+    transport: (0, viem_1.http)(ALCHEMY_RPC_URL)
 });
 exports.walletClient = (0, viem_1.createWalletClient)({
     account: (0, accounts_1.privateKeyToAccount)(`0x${PRIVATE_KEY}`),
     chain: chains_1.baseSepolia,
-    transport: (0, viem_1.http)()
+    transport: (0, viem_1.http)(ALCHEMY_RPC_URL)
 });

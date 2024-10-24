@@ -148,9 +148,10 @@ class EESSDK {
     async executeTransaction(contractCall, options) {
         if (!this.walletClient)
             throw new Error('Wallet client not provided.');
+        let txHash;
         if (options?.simulate !== false) {
             // Simulation logic
-            const { request, result } = await this.publicClient.simulateContract({
+            const { request } = await this.publicClient.simulateContract({
                 ...contractCall,
                 chain: this.walletClient.chain,
                 account: this.walletClient.account,
@@ -159,41 +160,58 @@ class EESSDK {
             if (!request)
                 throw new Error(`Failed to simulate ${contractCall.functionName}.`);
             // After successful simulation, proceed with the actual transaction
-            const txHash = await this.walletClient.writeContract(request);
-            const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash: txHash });
-            return { transactionReceipt, result };
+            txHash = await this.walletClient.writeContract(request);
         }
         else {
             // Direct write logic without simulation
-            const hash = await this.walletClient.writeContract({
+            txHash = await this.walletClient.writeContract({
                 ...contractCall,
                 chain: this.walletClient.chain,
                 account: this.walletClient.account,
                 ...options
             });
-            const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash });
-            return { transactionReceipt, result: hash };
+        }
+        if (options?.waitForReceipt !== false) {
+            const transactionReceipt = await this.publicClient.waitForTransactionReceipt({ hash: txHash });
+            return { transactionHash: txHash, transactionReceipt };
+        }
+        else {
+            return { transactionHash: txHash };
         }
     }
     async createJob(jobSpecification, sponsor, sponsorSignature, hasSponsorship, index, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.jobRegistry,
             abi: jobRegistry_1.jobRegistryAbi,
             functionName: 'createJob',
             args: [jobSpecification, sponsor, sponsorSignature, hasSponsorship, index],
         }, options);
-        return transactionReceipt;
+        let jobIndex;
+        if (result.transactionReceipt) {
+            // Find the JobCreated event and extract the index
+            const jobCreatedEvent = result.transactionReceipt.logs
+                .find(log => log.address.toLowerCase() === this.protocolConfig.jobRegistry.toLowerCase() &&
+                log.topics[0] === (0, viem_1.keccak256)((0, viem_1.toBytes)('JobCreated(uint256,address,address,bool)')));
+            if (jobCreatedEvent && jobCreatedEvent.topics[1]) {
+                jobIndex = BigInt(jobCreatedEvent.topics[1]);
+            }
+        }
+        return {
+            transactionHash: result.transactionHash,
+            transactionReceipt: result.transactionReceipt,
+            jobIndex
+        };
     }
     async deleteJob(index, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.jobRegistry,
             abi: jobRegistry_1.jobRegistryAbi,
             functionName: 'deleteJob',
             args: [index],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     watchCreatedJobs(application, onCreatedJob) {
         this.checkProtocolConfig();
@@ -260,6 +278,9 @@ class EESSDK {
                     { name: 'deadline', type: 'uint256' },
                     { name: 'application', type: 'address' },
                     { name: 'executionWindow', type: 'uint32' },
+                    { name: 'maxExecutions', type: 'uint48' },
+                    { name: 'inactiveGracePeriod', type: 'uint40' },
+                    { name: 'ignoreAppRevert', type: 'bool' },
                     { name: 'executionModule', type: 'bytes1' },
                     { name: 'feeModule', type: 'bytes1' },
                     { name: 'executionModuleInputHash', type: 'bytes32' },
@@ -273,6 +294,9 @@ class EESSDK {
                 deadline: jobSpecification.deadline,
                 application: jobSpecification.application,
                 executionWindow: jobSpecification.executionWindow,
+                maxExecutions: jobSpecification.maxExecutions,
+                inactiveGracePeriod: jobSpecification.inactiveGracePeriod,
+                ignoreAppRevert: jobSpecification.ignoreAppRevert,
                 executionModule: jobSpecification.executionModule,
                 feeModule: jobSpecification.feeModule,
                 executionModuleInputHash: (0, viem_1.keccak256)(jobSpecification.executionModuleInput),
@@ -369,13 +393,27 @@ class EESSDK {
     }
     async executeBatch(indices, gasLimits, feeRecipient, checkIn, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt, result } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'executeBatch',
             args: [indices, gasLimits, feeRecipient, checkIn],
         }, options);
-        return { transactionReceipt, failedJobIndices: result };
+        let failedIndices;
+        if (result.transactionReceipt) {
+            // Find the BatchExecution event and extract the failedIndices
+            const batchExecutionEvent = result.transactionReceipt.logs
+                .find(log => log.address.toLowerCase() === this.protocolConfig.executionManager.toLowerCase() &&
+                log.topics[0] === (0, viem_1.keccak256)((0, viem_1.toBytes)('BatchExecution(uint256[])')));
+            if (batchExecutionEvent && batchExecutionEvent.data) {
+                failedIndices = [...(0, viem_1.decodeAbiParameters)([{ type: 'uint256[]' }], batchExecutionEvent.data)[0]];
+            }
+        }
+        return {
+            transactionHash: result.transactionHash,
+            transactionReceipt: result.transactionReceipt,
+            failedIndices
+        };
     }
     async estimateBatchExecutionGas(indices, gasLimits, feeRecipient, checkIn) {
         this.checkProtocolConfig();
@@ -400,33 +438,43 @@ class EESSDK {
     }
     async revokeSponsorship(index, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.jobRegistry,
             abi: jobRegistry_1.jobRegistryAbi,
             functionName: 'revokeSponsorship',
             args: [index],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async approveFeeToken(token, amount, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: token,
             abi: viem_1.erc20Abi,
             functionName: 'approve',
             args: [this.protocolConfig.jobRegistry, amount],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
+    }
+    async approveAppToken(application, token, amount, options) {
+        this.checkProtocolConfig();
+        const result = await this.executeTransaction({
+            address: token,
+            abi: viem_1.erc20Abi,
+            functionName: 'approve',
+            args: [application, amount],
+        }, options);
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async approveStakingToken(amount, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.stakingToken,
             abi: viem_1.erc20Abi,
             functionName: 'approve',
             args: [this.protocolConfig.executionManager, amount],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async calculateCurrentFee(job) {
         const currentTime = BigInt(Math.floor(Date.now() / 1000));
@@ -444,40 +492,40 @@ class EESSDK {
     }
     async initiateEpoch(options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'initiateEpoch',
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async stake(options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'stake',
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async unstake(options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'unstake',
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async topup(amount, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'topup',
             args: [amount],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async commit(epoch, options) {
         this.checkProtocolConfig();
@@ -486,56 +534,57 @@ class EESSDK {
             account: this.walletClient.account,
             message: { raw: msgHash },
         });
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'commit',
             args: [(0, viem_1.keccak256)((0, viem_1.encodePacked)(['bytes'], [signature]))],
         }, options);
         return {
-            transactionReceipt,
+            transactionHash: result.transactionHash,
+            transactionReceipt: result.transactionReceipt,
             secret: signature
         };
     }
     async reveal(secret, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'reveal',
             args: [secret],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async slashInactiveExecutor(executor, round, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'slashInactiveExecutor',
             args: [executor, round],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async slashCommitter(executor, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.executionManager,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'slashCommitter',
             args: [executor],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async batchSlash(committerExecutors, inactiveExecutors, rounds, recipient, options) {
         this.checkProtocolConfig();
-        const { transactionReceipt } = await this.executeTransaction({
+        const result = await this.executeTransaction({
             address: this.protocolConfig.batchSlasher,
             abi: batchSlasher_1.batchSlasherAbi,
             functionName: 'batchSlash',
             args: [committerExecutors, inactiveExecutors, rounds, recipient],
         }, options);
-        return transactionReceipt;
+        return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
     async getEpoch() {
         this.checkProtocolConfig();

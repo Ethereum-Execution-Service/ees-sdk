@@ -384,31 +384,6 @@ export declare const jobRegistryAbi: readonly [{
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "event";
-    readonly name: "ApplicationRevertedUponJobDeletion";
-    readonly inputs: readonly [{
-        readonly name: "index";
-        readonly type: "uint256";
-        readonly indexed: true;
-        readonly internalType: "uint256";
-    }, {
-        readonly name: "owner";
-        readonly type: "address";
-        readonly indexed: true;
-        readonly internalType: "address";
-    }, {
-        readonly name: "application";
-        readonly type: "address";
-        readonly indexed: false;
-        readonly internalType: "address";
-    }, {
-        readonly name: "revertData";
-        readonly type: "bytes";
-        readonly indexed: false;
-        readonly internalType: "bytes";
-    }];
-    readonly anonymous: false;
-}, {
-    readonly type: "event";
     readonly name: "FeeModuleUpdate";
     readonly inputs: readonly [{
         readonly name: "index";
@@ -454,6 +429,26 @@ export declare const jobRegistryAbi: readonly [{
     readonly anonymous: false;
 }, {
     readonly type: "event";
+    readonly name: "JobDeactivated";
+    readonly inputs: readonly [{
+        readonly name: "index";
+        readonly type: "uint256";
+        readonly indexed: true;
+        readonly internalType: "uint256";
+    }, {
+        readonly name: "owner";
+        readonly type: "address";
+        readonly indexed: true;
+        readonly internalType: "address";
+    }, {
+        readonly name: "application";
+        readonly type: "address";
+        readonly indexed: true;
+        readonly internalType: "address";
+    }];
+    readonly anonymous: false;
+}, {
+    readonly type: "event";
     readonly name: "JobDeleted";
     readonly inputs: readonly [{
         readonly name: "index";
@@ -470,6 +465,11 @@ export declare const jobRegistryAbi: readonly [{
         readonly type: "address";
         readonly indexed: true;
         readonly internalType: "address";
+    }, {
+        readonly name: "applicationRevertedOnDelete";
+        readonly type: "bool";
+        readonly indexed: false;
+        readonly internalType: "bool";
     }];
     readonly anonymous: false;
 }, {

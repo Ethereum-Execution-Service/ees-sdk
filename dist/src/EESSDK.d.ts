@@ -15,8 +15,15 @@ export declare class EESSDK {
     getJobsArrayLength(): Promise<bigint>;
     getJobs(indices: bigint[]): Promise<Job[]>;
     private executeTransaction;
-    createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;
-    deleteJob(index: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;
+    createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+        jobIndex?: bigint;
+    }>;
+    deleteJob(index: bigint, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
     watchCreatedJobs(application: `0x${string}`, onCreatedJob: (index: bigint) => any): WatchEventReturnType;
     watchExecutedJobs(application: `0x${string}`, onExecutedJob: (index: bigint) => any): WatchEventReturnType;
     watchDeletedJobs(application: `0x${string}`, onDeletedJob: (index: bigint) => any): WatchEventReturnType;
@@ -26,30 +33,69 @@ export declare class EESSDK {
     getEpochInfo(): Promise<EpochInfo>;
     getCommitData(executors: `0x${string}`[]): Promise<CommitData[]>;
     executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions): Promise<{
-        transactionReceipt: TransactionReceipt;
-        failedJobIndices: bigint[];
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+        failedIndices?: bigint[];
     }>;
     estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean): Promise<bigint>;
     estimateExecutionGas(index: bigint, feeRecipient: `0x${string}`): Promise<bigint>;
-    revokeSponsorship(index: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;
-    approveFeeToken(token: `0x${string}`, amount: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;
-    approveStakingToken(amount: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;
+    revokeSponsorship(index: bigint, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    approveFeeToken(token: `0x${string}`, amount: bigint, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    approveAppToken(application: `0x${string}`, token: `0x${string}`, amount: bigint, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    approveStakingToken(amount: bigint, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
     calculateCurrentFee<T extends FeeCalculationMinimum>(job: T): Promise<{
         fee: bigint;
         token: `0x${string}`;
     } | null>;
-    initiateEpoch(options?: ContractCallOptions): Promise<TransactionReceipt>;
-    stake(options?: ContractCallOptions): Promise<TransactionReceipt>;
-    unstake(options?: ContractCallOptions): Promise<TransactionReceipt>;
-    topup(amount: bigint, options?: ContractCallOptions): Promise<TransactionReceipt>;
+    initiateEpoch(options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    stake(options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    unstake(options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    topup(amount: bigint, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
     commit(epoch: bigint, options?: ContractCallOptions): Promise<{
-        transactionReceipt: TransactionReceipt;
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
         secret: `0x${string}`;
     }>;
-    reveal(secret: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
-    slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions): Promise<TransactionReceipt>;
-    slashCommitter(executor: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
-    batchSlash(committerExecutors: `0x${string}`[], inactiveExecutors: `0x${string}`[], rounds: number[], recipient: `0x${string}`, options?: ContractCallOptions): Promise<TransactionReceipt>;
+    reveal(secret: `0x${string}`, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    slashCommitter(executor: `0x${string}`, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
+    batchSlash(committerExecutors: `0x${string}`[], inactiveExecutors: `0x${string}`[], rounds: number[], recipient: `0x${string}`, options?: ContractCallOptions): Promise<{
+        transactionHash: `0x${string}`;
+        transactionReceipt?: TransactionReceipt;
+    }>;
     getEpoch(): Promise<bigint>;
     jobIsExpired(job: Job): boolean;
     jobInExecutionWindow(job: Job): boolean;

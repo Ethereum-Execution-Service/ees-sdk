@@ -113,6 +113,7 @@ export interface ContractFunctionConfig {
 }
 export type ContractCallOptions = {
     simulate?: boolean;
+    waitForReceipt?: boolean;
     value?: bigint;
     gas?: bigint;
 } & ({

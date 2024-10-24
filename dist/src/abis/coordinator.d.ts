@@ -328,6 +328,36 @@ export declare const coordinatorAbi: readonly [{
     readonly outputs: readonly [];
     readonly stateMutability: "nonpayable";
 }, {
+    readonly type: "function";
+    readonly name: "updateExecutorTax";
+    readonly inputs: readonly [{
+        readonly name: "_executorTax";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "updateProtocolTax";
+    readonly inputs: readonly [{
+        readonly name: "_protocolTax";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "event";
+    readonly name: "BatchExecution";
+    readonly inputs: readonly [{
+        readonly name: "failedIndices";
+        readonly type: "uint256[]";
+        readonly indexed: false;
+        readonly internalType: "uint256[]";
+    }];
+    readonly anonymous: false;
+}, {
     readonly type: "event";
     readonly name: "CheckIn";
     readonly inputs: readonly [{
@@ -511,7 +541,15 @@ export declare const coordinatorAbi: readonly [{
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
+    readonly name: "TaxUpdateTooLarge";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
     readonly name: "TopupBelowMinimum";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "UpdateOnCooldown";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
