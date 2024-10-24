@@ -4,12 +4,12 @@ const viem_1 = require("viem");
 const config_1 = require("../config");
 const EESSDK_1 = require("./EESSDK");
 async function main() {
-    const configProviderAddress = "0x1eA72F0F3173a5932471e3eBe47a22Aac1771E48";
+    const configProviderAddress = "0x605E5C637c67e8843116a9F58558644924D61da4";
     const eesSdk = await EESSDK_1.EESSDK.init(configProviderAddress, config_1.publicClient, config_1.walletClient);
     const jobSpecification = {
         nonce: 88805526045906062658843605009268256866115913838000966001699316491583730826117n,
         deadline: 115792089237316195423570985008687907853269984665640564039457584007913129639935n,
-        application: '0x75D97DF130f4cC18B235A673E6Fe5de9ecF2028A',
+        application: '0xBC2a93F9bd4806ecE7F7BAc31Cb12759b145718B',
         executionWindow: 1800,
         maxExecutions: 0,
         inactiveGracePeriod: 0,
@@ -37,6 +37,9 @@ async function main() {
     //console.log(jobSpecification);
     const signature = await eesSdk.signJobSpecification(jobSpecification);
     //console.log("signature:", signature);
+    await eesSdk.getEpochInfo().then((epochInfo) => {
+        console.log(epochInfo);
+    });
     /*
     await eesSdk.approveFeeToken("0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
       console.log(result.transactionReceipt);
@@ -69,13 +72,15 @@ async function main() {
      const currentEpoch: bigint = await eesSdk.getEpoch();
      console.log("CURRENT EPOCH: ", currentEpoch);
      */
+    /*
     await eesSdk.initiateEpoch().then((res) => {
-        console.log(res.transactionHash);
+      console.log(res.transactionHash);
     });
     await eesSdk.commit(6n).then((res) => {
-        console.log(res.transactionHash);
-        console.log(res.secret);
+      console.log(res.transactionHash);
+      console.log(res.secret);
     });
+    */
     //console.log("SIGNATURE: ", secret);
     /*
     await eesSdk.reveal("0x51de6cf657335f0a5664bc7483aec7d931beb895563fa2312546c22092da62de0c71c2660ee267b1b0ee0e0e7ec7a2b9ad5898dafe450f77151ebfdd61d090221b").then((transactionReceipt: TransactionReceipt) => {

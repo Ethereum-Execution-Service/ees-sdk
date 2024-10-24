@@ -6,13 +6,13 @@ import { EESSDK } from "./EESSDK";
 
 async function main() {
   
-  const configProviderAddress = "0x1eA72F0F3173a5932471e3eBe47a22Aac1771E48";
+  const configProviderAddress = "0x605E5C637c67e8843116a9F58558644924D61da4";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
   const jobSpecification: JobSpecification = {
     nonce: 88805526045906062658843605009268256866115913838000966001699316491583730826117n,
     deadline: 115792089237316195423570985008687907853269984665640564039457584007913129639935n,
-    application: '0x75D97DF130f4cC18B235A673E6Fe5de9ecF2028A',
+    application: '0xBC2a93F9bd4806ecE7F7BAc31Cb12759b145718B',
     executionWindow: 1800,
     maxExecutions: 0,
     inactiveGracePeriod: 0,
@@ -53,11 +53,16 @@ async function main() {
   const signature: `0x${string}` = await eesSdk.signJobSpecification(jobSpecification);
   //console.log("signature:", signature);
   
+
+  await eesSdk.getEpochInfo().then((epochInfo) => {
+    console.log(epochInfo);
+  });
   /*
   await eesSdk.approveFeeToken("0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
     console.log(result.transactionReceipt);
   });
   */
+  
   
   /*
   await eesSdk.approveAppToken("0x94D12a6d10255f6F1e84A823419B37af83841b58", "0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
@@ -76,8 +81,6 @@ async function main() {
   */
   
   
-  
-  
   /*
   await eesSdk.unstake().then((txReceipt: TransactionReceipt) => {
     console.log(txReceipt);
@@ -94,7 +97,7 @@ async function main() {
   console.log("CURRENT EPOCH: ", currentEpoch);
   */
 
-  
+  /*
   await eesSdk.initiateEpoch().then((res) => {
     console.log(res.transactionHash);
   });
@@ -102,6 +105,7 @@ async function main() {
     console.log(res.transactionHash);
     console.log(res.secret);
   });
+  */
   //console.log("SIGNATURE: ", secret);
   
   

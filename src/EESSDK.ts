@@ -94,7 +94,7 @@ export class EESSDK {
       revealPhaseDuration: decodedcoordinatorConfig[13],
       selectionPhaseDuration: decodedcoordinatorConfig[12] + decodedcoordinatorConfig[13],
       totalRoundDuration: decodedcoordinatorConfig[9] + decodedcoordinatorConfig[10],
-      epochDuration: (decodedcoordinatorConfig[12] + decodedcoordinatorConfig[13]) + (decodedcoordinatorConfig[9] + decodedcoordinatorConfig[10]) * decodedcoordinatorConfig[6]
+      epochDuration: (decodedcoordinatorConfig[12] + decodedcoordinatorConfig[13]) + (decodedcoordinatorConfig[9] + decodedcoordinatorConfig[10]) * decodedcoordinatorConfig[6] + decodedcoordinatorConfig[11]
     }
   }
 
@@ -390,6 +390,9 @@ export class EESSDK {
       abi: querierAbi,
       functionName: 'getCurrentEpochInfo'
     });
+
+    console.log("epoch duration: ", this.protocolConfig!.epochDuration);
+    console.log("config", this.protocolConfig);
 
     const epochStartTime: bigint = data[1] - BigInt(this.protocolConfig!.epochDuration);
     const revealPhaseStartTime: bigint = epochStartTime + BigInt(this.protocolConfig!.commitPhaseDuration);
