@@ -36,7 +36,7 @@ export class EESSDK {
     const decodedAddresses = decodeAbiParameters(
       [
         { name: 'jobRegistry', type: 'address' },
-        { name: 'executionManager', type: 'address' },
+        { name: 'coordinator', type: 'address' },
         { name: 'querier', type: 'address' },
         { name: 'batchSlasher', type: 'address' }
       ],
@@ -50,7 +50,7 @@ export class EESSDK {
       ],
       config[1]
     );
-    const decodedExecutionManagerConfig = decodeAbiParameters(
+    const decodedcoordinatorConfig = decodeAbiParameters(
       [
         { name: 'stakingToken', type: 'address' },
         { name: 'stakingAmount', type: 'uint256' },
@@ -72,29 +72,29 @@ export class EESSDK {
 
     this.protocolConfig = {
       jobRegistry: decodedAddresses[0],
-      executionManager: decodedAddresses[1],
+      coordinator: decodedAddresses[1],
       querier: decodedAddresses[2],
       batchSlasher: decodedAddresses[3],
       executionGasOverhead: decodedJobRegistryConfig[0],
       executionModulesLength: decodedJobRegistryConfig[1],
       feeModulesLength: decodedJobRegistryConfig[2],
-      stakingToken: decodedExecutionManagerConfig[0],
-      stakingAmount: decodedExecutionManagerConfig[1],
-      minimumStakingPeriod: decodedExecutionManagerConfig[2],
-      stakingBalanceThreshold: decodedExecutionManagerConfig[3],
-      inactiveSlashingAmount: decodedExecutionManagerConfig[4],
-      commitSlashingAmount: decodedExecutionManagerConfig[5],
-      roundsPerEpoch: decodedExecutionManagerConfig[6],
-      executorTax: decodedExecutionManagerConfig[7],
-      protocolTax: decodedExecutionManagerConfig[8],
-      roundDuration: decodedExecutionManagerConfig[9],
-      roundBuffer: decodedExecutionManagerConfig[10],
-      slashingDuration: decodedExecutionManagerConfig[11],
-      commitPhaseDuration: decodedExecutionManagerConfig[12],
-      revealPhaseDuration: decodedExecutionManagerConfig[13],
-      selectionPhaseDuration: decodedExecutionManagerConfig[12] + decodedExecutionManagerConfig[13],
-      totalRoundDuration: decodedExecutionManagerConfig[9] + decodedExecutionManagerConfig[10],
-      epochDuration: (decodedExecutionManagerConfig[12] + decodedExecutionManagerConfig[13]) + (decodedExecutionManagerConfig[9] + decodedExecutionManagerConfig[10]) * decodedExecutionManagerConfig[6]
+      stakingToken: decodedcoordinatorConfig[0],
+      stakingAmount: decodedcoordinatorConfig[1],
+      minimumStakingPeriod: decodedcoordinatorConfig[2],
+      stakingBalanceThreshold: decodedcoordinatorConfig[3],
+      inactiveSlashingAmount: decodedcoordinatorConfig[4],
+      commitSlashingAmount: decodedcoordinatorConfig[5],
+      roundsPerEpoch: decodedcoordinatorConfig[6],
+      executorTax: decodedcoordinatorConfig[7],
+      protocolTax: decodedcoordinatorConfig[8],
+      roundDuration: decodedcoordinatorConfig[9],
+      roundBuffer: decodedcoordinatorConfig[10],
+      slashingDuration: decodedcoordinatorConfig[11],
+      commitPhaseDuration: decodedcoordinatorConfig[12],
+      revealPhaseDuration: decodedcoordinatorConfig[13],
+      selectionPhaseDuration: decodedcoordinatorConfig[12] + decodedcoordinatorConfig[13],
+      totalRoundDuration: decodedcoordinatorConfig[9] + decodedcoordinatorConfig[10],
+      epochDuration: (decodedcoordinatorConfig[12] + decodedcoordinatorConfig[13]) + (decodedcoordinatorConfig[9] + decodedcoordinatorConfig[10]) * decodedcoordinatorConfig[6]
     }
   }
 
@@ -436,7 +436,7 @@ export class EESSDK {
   async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'executeBatch',
       args: [indices, gasLimits, feeRecipient, checkIn],
@@ -448,7 +448,7 @@ export class EESSDK {
       // Find the BatchExecution event and extract the failedIndices
       const batchExecutionEvent = result.transactionReceipt.logs
         .find(log => 
-          log.address.toLowerCase() === this.protocolConfig!.executionManager.toLowerCase() &&
+          log.address.toLowerCase() === this.protocolConfig!.coordinator.toLowerCase() &&
           log.topics[0] === keccak256(toBytes('BatchExecution(uint256[])'))
         );
 
@@ -467,7 +467,7 @@ export class EESSDK {
   async estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<bigint> {
     this.checkProtocolConfig();
     const gas = await this.publicClient.estimateContractGas({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'executeBatch',
       args: [indices, gasLimits, feeRecipient, checkIn],
@@ -482,7 +482,7 @@ export class EESSDK {
       abi: jobRegistryAbi,
       functionName: 'execute',
       args: [index, feeRecipient],
-      account: this.protocolConfig!.executionManager
+      account: this.protocolConfig!.coordinator
     });
     return gas;
   }
@@ -526,7 +526,7 @@ export class EESSDK {
       address: this.protocolConfig!.stakingToken,
       abi: erc20Abi,
       functionName: 'approve',
-      args: [this.protocolConfig!.executionManager, amount],
+      args: [this.protocolConfig!.coordinator, amount],
     }, options);
     return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
@@ -549,7 +549,7 @@ export class EESSDK {
   async initiateEpoch(options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'initiateEpoch',
     }, options);
@@ -559,7 +559,7 @@ export class EESSDK {
   async stake(options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'stake',
     }, options);
@@ -569,7 +569,7 @@ export class EESSDK {
   async unstake(options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'unstake',
     }, options);
@@ -579,7 +579,7 @@ export class EESSDK {
   async topup(amount: bigint, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'topup',
       args: [amount],
@@ -599,7 +599,7 @@ export class EESSDK {
     });
 
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'commit',
       args: [keccak256(encodePacked(['bytes'], [signature]))],
@@ -615,7 +615,7 @@ export class EESSDK {
   async reveal(secret: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'reveal',
       args: [secret],
@@ -626,7 +626,7 @@ export class EESSDK {
   async slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'slashInactiveExecutor',
       args: [executor, round],
@@ -637,7 +637,7 @@ export class EESSDK {
   async slashCommitter(executor: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'slashCommitter',
       args: [executor],
@@ -659,7 +659,7 @@ export class EESSDK {
   async getEpoch() : Promise<bigint> {
     this.checkProtocolConfig();
     const epoch = await this.publicClient.readContract({
-      address: this.protocolConfig!.executionManager,
+      address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'epoch',
     });
