@@ -404,6 +404,26 @@ export declare const coordinatorAbi: readonly [{
     readonly anonymous: false;
 }, {
     readonly type: "event";
+    readonly name: "ExecutorActivated";
+    readonly inputs: readonly [{
+        readonly name: "executor";
+        readonly type: "address";
+        readonly indexed: true;
+        readonly internalType: "address";
+    }];
+    readonly anonymous: false;
+}, {
+    readonly type: "event";
+    readonly name: "ExecutorDeactivated";
+    readonly inputs: readonly [{
+        readonly name: "executor";
+        readonly type: "address";
+        readonly indexed: true;
+        readonly internalType: "address";
+    }];
+    readonly anonymous: false;
+}, {
+    readonly type: "event";
     readonly name: "OwnershipTransferred";
     readonly inputs: readonly [{
         readonly name: "user";
