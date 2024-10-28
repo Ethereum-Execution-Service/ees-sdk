@@ -1,3 +1,4 @@
 /.env
 .env
+/src/main.ts
 /node_modules
