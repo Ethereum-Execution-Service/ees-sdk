@@ -4,13 +4,13 @@ const viem_1 = require("viem");
 const config_1 = require("../config");
 const EESSDK_1 = require("./EESSDK");
 async function main() {
-    const configProviderAddress = "0x605E5C637c67e8843116a9F58558644924D61da4";
+    const configProviderAddress = "0xAa009CFD31FDf73D29e6721a6040644ACA8E05fC";
     const eesSdk = await EESSDK_1.EESSDK.init(configProviderAddress, config_1.publicClient, config_1.walletClient);
     const jobSpecification = {
-        nonce: 88805526045906062658843605009268256866115913838000966001699316491583730826117n,
-        deadline: 115792089237316195423570985008687907853269984665640564039457584007913129639935n,
-        application: '0xBC2a93F9bd4806ecE7F7BAc31Cb12759b145718B',
-        executionWindow: 1800,
+        nonce: BigInt(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)),
+        deadline: 1157920892373161954235709850086879078532694665640564039457584007913129639935n,
+        application: '0x0C5881195a89ba54a5a84233127A3F05A287D15D',
+        executionWindow: 60,
         maxExecutions: 0,
         inactiveGracePeriod: 0,
         ignoreAppRevert: false,
@@ -19,12 +19,12 @@ async function main() {
         executionModuleInput: (0, viem_1.encodeAbiParameters)([
             { name: 'cooldown', type: 'uint32' },
             { name: 'initialExecutionTime', type: 'uint40' }
-        ], [2592000, 1724844660]),
+        ], [100, 1730029364]),
         feeModuleInput: (0, viem_1.encodeAbiParameters)([
             { name: 'executionFeeToken', type: 'address' },
             { name: 'minExecutionFee', type: 'uint256' },
             { name: 'maxExecutionFee', type: 'uint256' }
-        ], ["0x7139F4601480d20d43Fa77780B67D295805aD31a", (0, viem_1.parseUnits)('0.1', 6), (0, viem_1.parseUnits)('0.2', 6)]),
+        ], ["0x7139F4601480d20d43Fa77780B67D295805aD31a", (0, viem_1.parseUnits)('0.5', 6), (0, viem_1.parseUnits)('1', 6)]),
         applicationInput: (0, viem_1.encodeAbiParameters)([
             { name: 'recipient', type: 'address' },
             { name: 'amount', type: 'uint256' },
@@ -37,31 +37,30 @@ async function main() {
     //console.log(jobSpecification);
     const signature = await eesSdk.signJobSpecification(jobSpecification);
     //console.log("signature:", signature);
+    /*
     await eesSdk.getEpochInfo().then((epochInfo) => {
-        console.log(epochInfo);
+      console.log(epochInfo);
     });
+    */
     /*
     await eesSdk.approveFeeToken("0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
       console.log(result.transactionReceipt);
     });
     */
     /*
-    await eesSdk.approveAppToken("0x94D12a6d10255f6F1e84A823419B37af83841b58", "0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
+    await eesSdk.approveAppToken("0x0C5881195a89ba54a5a84233127A3F05A287D15D", "0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
       console.log(result.transactionReceipt);
     });
     */
-    /*
-    await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n, { simulate: false }).then((result) => {
-      console.log(result.transactionReceipt);
+    await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((result) => {
+        console.log(result.transactionReceipt);
     });
-   
     await eesSdk.stake({ simulate: true }).then((result) => {
-      console.log(result.transactionReceipt);
+        console.log(result.transactionReceipt);
     });
-    */
     /*
-    await eesSdk.unstake().then((txReceipt: TransactionReceipt) => {
-      console.log(txReceipt);
+    await eesSdk.unstake().then((result) => {
+      console.log(result.transactionReceipt);
     });
     */
     //const currentEpoch: bigint = await eesSdk.getEpoch();
@@ -108,6 +107,13 @@ async function main() {
     await eesSdk.createJob(jobSpecification, walletClient.account?.address!, signature, true, 100n).then((res) => {
       console.log(res);
     })
+      */
+    /*
+    console.log(eesSdk.getProtocolConfig());
+  
+    await eesSdk.getEpochInfo().then((epochInfo) => {
+      console.log(epochInfo);
+    });
     */
     //const data = await eesSdk.getJobs([1n]);
     //console.log(data);

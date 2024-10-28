@@ -430,6 +430,11 @@ export declare const coordinatorAbi: readonly [{
         readonly type: "uint192";
         readonly indexed: true;
         readonly internalType: "uint192";
+    }, {
+        readonly name: "newSeed";
+        readonly type: "bytes32";
+        readonly indexed: false;
+        readonly internalType: "bytes32";
     }];
     readonly anonymous: false;
 }, {
