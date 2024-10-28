@@ -4,12 +4,13 @@ const viem_1 = require("viem");
 const config_1 = require("../config");
 const EESSDK_1 = require("./EESSDK");
 async function main() {
-    const configProviderAddress = "0x5EA584329e9a6CAE4C056d89E717d62473C58b1b";
+    const configProviderAddress = "0xF9dEa80848385a933018915Ef2667b6dCE6F409D";
     const eesSdk = await EESSDK_1.EESSDK.init(configProviderAddress, config_1.publicClient, config_1.walletClient);
+    const applicationAddress = "0x093e2E354E6381529afeA93B6fbC06B7681B15D1";
     const jobSpecification = {
         nonce: BigInt(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)),
         deadline: 1157920892373161954235709850086879078532694665640564039457584007913129639935n,
-        application: '0xcca39E8999C2632EB06811EfCeeC117B2181d3F8',
+        application: applicationAddress,
         executionWindow: 60,
         maxExecutions: 0,
         inactiveGracePeriod: 0,
@@ -42,12 +43,15 @@ async function main() {
       console.log(epochInfo);
     });
     */
+    /*
     await eesSdk.approveFeeToken("0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
-        console.log(result.transactionReceipt);
+      console.log(result.transactionReceipt);
     });
-    await eesSdk.approveAppToken("0xcca39E8999C2632EB06811EfCeeC117B2181d3F8", "0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
-        console.log(result.transactionReceipt);
+    
+    await eesSdk.approveAppToken(applicationAddress, "0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
+      console.log(result.transactionReceipt);
     });
+    */
     /*
     await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((result) => {
       console.log(result.transactionReceipt);

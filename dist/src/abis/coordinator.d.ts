@@ -355,6 +355,21 @@ export declare const coordinatorAbi: readonly [{
         readonly type: "uint256[]";
         readonly indexed: false;
         readonly internalType: "uint256[]";
+    }, {
+        readonly name: "totalProtocolTax";
+        readonly type: "uint256";
+        readonly indexed: false;
+        readonly internalType: "uint256";
+    }, {
+        readonly name: "totalExecutorTax";
+        readonly type: "uint256";
+        readonly indexed: false;
+        readonly internalType: "uint256";
+    }, {
+        readonly name: "taxPoolReward";
+        readonly type: "uint256";
+        readonly indexed: false;
+        readonly internalType: "uint256";
     }];
     readonly anonymous: false;
 }, {
