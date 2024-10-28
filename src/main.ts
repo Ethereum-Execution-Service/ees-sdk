@@ -6,11 +6,11 @@ import { EESSDK } from "./EESSDK";
 
 async function main() {
   
-  const configProviderAddress = "0xF9dEa80848385a933018915Ef2667b6dCE6F409D";
+  const configProviderAddress = "0xb7c6CC31954dc418D63b9B325639220ba89C6386";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
 
-  const applicationAddress: `0x${string}` = "0x093e2E354E6381529afeA93B6fbC06B7681B15D1";
+  const applicationAddress: `0x${string}` = "0xA65183CCc6f99047323e825D0560e631e123aD88";
 
 
   const jobSpecification: JobSpecification = {
@@ -28,7 +28,7 @@ async function main() {
           {name: 'cooldown', type: 'uint32'},
           { name: 'initialExecutionTime', type: 'uint40' }
       ],
-      [100, 1730029364]),
+      [100, 1730150170]),
     feeModuleInput: encodeAbiParameters(
       [
         { name: 'executionFeeToken', type: 'address' },
@@ -75,6 +75,7 @@ async function main() {
   
   
   
+  
 
   /*
   await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((result) => {
@@ -85,6 +86,7 @@ async function main() {
     console.log(result.transactionReceipt);
   });
   */
+  
   
   
   
@@ -150,11 +152,11 @@ async function main() {
   //console.log(domainSeparator);
 
   
-  /*
+  
   await eesSdk.createJob(jobSpecification, walletClient.account?.address!, signature, true, 100n).then((res) => {
     console.log(res);
   })
-    */
+    
     
   
 
