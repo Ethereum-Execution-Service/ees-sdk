@@ -1,4 +1,0 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.batchSlasherAbi = void 0;
-exports.batchSlasherAbi = [{ "type": "constructor", "inputs": [{ "name": "_coordinator", "type": "address", "internalType": "address" }], "stateMutability": "nonpayable" }, { "type": "function", "name": "batchSlash", "inputs": [{ "name": "_committerExecutors", "type": "address[]", "internalType": "address[]" }, { "name": "_inactiveExecutors", "type": "address[]", "internalType": "address[]" }, { "name": "_rounds", "type": "uint8[]", "internalType": "uint8[]" }, { "name": "_recipient", "type": "address", "internalType": "address" }], "outputs": [], "stateMutability": "nonpayable" }, { "type": "function", "name": "coordinator", "inputs": [], "outputs": [{ "name": "", "type": "address", "internalType": "contract ICoordinator" }], "stateMutability": "view" }];
