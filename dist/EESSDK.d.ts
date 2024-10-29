@@ -84,11 +84,11 @@ export declare class EESSDK {
         transactionHash: `0x${string}`;
         transactionReceipt?: TransactionReceipt;
     }>;
-    slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions): Promise<{
+    slashInactiveExecutor(executor: `0x${string}`, recipient: `0x${string}`, round: number, options?: ContractCallOptions): Promise<{
         transactionHash: `0x${string}`;
         transactionReceipt?: TransactionReceipt;
     }>;
-    slashCommitter(executor: `0x${string}`, options?: ContractCallOptions): Promise<{
+    slashCommitter(executor: `0x${string}`, recipient: `0x${string}`, options?: ContractCallOptions): Promise<{
         transactionHash: `0x${string}`;
         transactionReceipt?: TransactionReceipt;
     }>;

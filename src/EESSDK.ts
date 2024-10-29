@@ -623,24 +623,24 @@ export class EESSDK {
     return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async slashInactiveExecutor(executor: `0x${string}`, round: number, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
+  async slashInactiveExecutor(executor: `0x${string}`, recipient: `0x${string}`, round: number, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
       address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'slashInactiveExecutor',
-      args: [executor, round],
+      args: [executor, round, recipient],
     }, options);
     return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }
 
-  async slashCommitter(executor: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
+  async slashCommitter(executor: `0x${string}`, recipient: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
       address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'slashCommitter',
-      args: [executor],
+      args: [executor, recipient],
     }, options);
     return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
   }

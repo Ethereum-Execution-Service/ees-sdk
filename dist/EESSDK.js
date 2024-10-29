@@ -556,23 +556,23 @@ class EESSDK {
         }, options);
         return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
-    async slashInactiveExecutor(executor, round, options) {
+    async slashInactiveExecutor(executor, recipient, round, options) {
         this.checkProtocolConfig();
         const result = await this.executeTransaction({
             address: this.protocolConfig.coordinator,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'slashInactiveExecutor',
-            args: [executor, round],
+            args: [executor, round, recipient],
         }, options);
         return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
-    async slashCommitter(executor, options) {
+    async slashCommitter(executor, recipient, options) {
         this.checkProtocolConfig();
         const result = await this.executeTransaction({
             address: this.protocolConfig.coordinator,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'slashCommitter',
-            args: [executor],
+            args: [executor, recipient],
         }, options);
         return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
