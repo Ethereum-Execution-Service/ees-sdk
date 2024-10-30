@@ -464,13 +464,13 @@ export class EESSDK {
     };
   }
 
-  async estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<bigint> {
+  async estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`) : Promise<bigint> {
     this.checkProtocolConfig();
     const gas = await this.publicClient.estimateContractGas({
       address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'executeBatch',
-      args: [indices, gasLimits, feeRecipient, checkIn],
+      args: [indices, gasLimits, feeRecipient],
     });
     return gas;
   }

@@ -6,11 +6,11 @@ import { EESSDK } from "./EESSDK";
 
 async function main() {
   
-  const configProviderAddress = "0xb7c6CC31954dc418D63b9B325639220ba89C6386";
+  const configProviderAddress = "0x33415837047dA5550Ef8ccEDF0F00eE17921a33E";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
 
-  const applicationAddress: `0x${string}` = "0xA65183CCc6f99047323e825D0560e631e123aD88";
+  const applicationAddress: `0x${string}` = "0x1202547645ADEeE75a0637E0b0815A6A41764738";
 
 
   const jobSpecification: JobSpecification = {
@@ -152,10 +152,17 @@ async function main() {
   //console.log(domainSeparator);
 
   
-  
+  /*
   await eesSdk.createJob(jobSpecification, walletClient.account?.address!, signature, true, 100n).then((res) => {
     console.log(res);
   })
+    */
+
+  /*
+  await eesSdk.topup(parseUnits("5000", 6), { waitForReceipt: true }).then((res) => {
+    console.log(res);
+  });
+  */
     
     
   
@@ -178,6 +185,11 @@ async function main() {
 
   //const txReceipt: TransactionReceipt = await eesSdk.executeBatch([3n], "0x303cAE9641B868722194Bd9517eaC5ca2ad6e71a");
   //console.log(txReceipt);
+
+
+  await eesSdk.getExecutorInfo(["0xCE02d0981c1D4dCA9331178F322506C06E394bb0"]).then((res) => {
+    console.log(res);
+  });
   
   console.log("----- main finished ------");
 

@@ -37,7 +37,7 @@ export declare class EESSDK {
         transactionReceipt?: TransactionReceipt;
         failedIndices?: bigint[];
     }>;
-    estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean): Promise<bigint>;
+    estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`): Promise<bigint>;
     estimateExecutionGas(index: bigint, feeRecipient: `0x${string}`): Promise<bigint>;
     revokeSponsorship(index: bigint, options?: ContractCallOptions): Promise<{
         transactionHash: `0x${string}`;

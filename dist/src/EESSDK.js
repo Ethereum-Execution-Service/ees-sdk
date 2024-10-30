@@ -415,13 +415,13 @@ class EESSDK {
             failedIndices
         };
     }
-    async estimateBatchExecutionGas(indices, gasLimits, feeRecipient, checkIn) {
+    async estimateBatchExecutionGas(indices, gasLimits, feeRecipient) {
         this.checkProtocolConfig();
         const gas = await this.publicClient.estimateContractGas({
             address: this.protocolConfig.coordinator,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'executeBatch',
-            args: [indices, gasLimits, feeRecipient, checkIn],
+            args: [indices, gasLimits, feeRecipient],
         });
         return gas;
     }

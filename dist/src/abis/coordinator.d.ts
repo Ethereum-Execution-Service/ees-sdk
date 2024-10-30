@@ -148,10 +148,6 @@ export declare const coordinatorAbi: readonly [{
         readonly name: "_feeRecipient";
         readonly type: "address";
         readonly internalType: "address";
-    }, {
-        readonly name: "_checkIn";
-        readonly type: "bool";
-        readonly internalType: "bool";
     }];
     readonly outputs: readonly [{
         readonly name: "failedIndices";
