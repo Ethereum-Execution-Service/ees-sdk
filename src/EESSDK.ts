@@ -433,13 +433,13 @@ export class EESSDK {
     }));
   }
   
-  async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }> {
+  async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
       address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'executeBatch',
-      args: [indices, gasLimits, feeRecipient, checkIn],
+      args: [indices, gasLimits, feeRecipient],
     }, options);
 
     let failedIndices: bigint[] | undefined;

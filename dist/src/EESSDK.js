@@ -391,13 +391,13 @@ class EESSDK {
             ...data[index]
         }));
     }
-    async executeBatch(indices, gasLimits, feeRecipient, checkIn, options) {
+    async executeBatch(indices, gasLimits, feeRecipient, options) {
         this.checkProtocolConfig();
         const result = await this.executeTransaction({
             address: this.protocolConfig.coordinator,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'executeBatch',
-            args: [indices, gasLimits, feeRecipient, checkIn],
+            args: [indices, gasLimits, feeRecipient],
         }, options);
         let failedIndices;
         if (result.transactionReceipt) {

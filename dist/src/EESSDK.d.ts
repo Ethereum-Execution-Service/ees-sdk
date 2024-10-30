@@ -32,7 +32,7 @@ export declare class EESSDK {
     getExecutorInfo(executors: `0x${string}`[]): Promise<ExecutorInfo[]>;
     getEpochInfo(): Promise<EpochInfo>;
     getCommitData(executors: `0x${string}`[]): Promise<CommitData[]>;
-    executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions): Promise<{
+    executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, options?: ContractCallOptions): Promise<{
         transactionHash: `0x${string}`;
         transactionReceipt?: TransactionReceipt;
         failedIndices?: bigint[];
