@@ -145,7 +145,7 @@ export interface EESSDK {
    * @param options - Optional contract call options.
    * @returns A promise that resolves to an object containing the transaction hash and optionally receipt and failed job indices if waitForReceipt is set true in options.
    */
-  executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }>;
+  executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }>;
 
   /**
    * Estimates the gas for executing a batch of jobs in ExecutionManager.
