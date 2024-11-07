@@ -5,9 +5,9 @@ export declare const querierAbi: readonly [{
         readonly type: "address";
         readonly internalType: "contract JobRegistry";
     }, {
-        readonly name: "_executionManager";
+        readonly name: "_coordinator";
         readonly type: "address";
-        readonly internalType: "contract ExecutionManager";
+        readonly internalType: "contract Coordinator";
     }];
     readonly stateMutability: "nonpayable";
 }, {
@@ -21,7 +21,7 @@ export declare const querierAbi: readonly [{
     readonly outputs: readonly [{
         readonly name: "";
         readonly type: "tuple[]";
-        readonly internalType: "struct IExecutionManager.CommitData[]";
+        readonly internalType: "struct ICoordinator.CommitData[]";
         readonly components: readonly [{
             readonly name: "commitment";
             readonly type: "bytes32";
@@ -61,6 +61,10 @@ export declare const querierAbi: readonly [{
         readonly name: "";
         readonly type: "address[]";
         readonly internalType: "address[]";
+    }, {
+        readonly name: "";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
     }];
     readonly stateMutability: "view";
 }, {
@@ -74,7 +78,7 @@ export declare const querierAbi: readonly [{
     readonly outputs: readonly [{
         readonly name: "";
         readonly type: "tuple[]";
-        readonly internalType: "struct IExecutionManager.Executor[]";
+        readonly internalType: "struct ICoordinator.Executor[]";
         readonly components: readonly [{
             readonly name: "balance";
             readonly type: "uint256";
@@ -89,16 +93,24 @@ export declare const querierAbi: readonly [{
             readonly internalType: "bool";
         }, {
             readonly name: "arrayIndex";
-            readonly type: "uint40";
-            readonly internalType: "uint40";
+            readonly type: "uint32";
+            readonly internalType: "uint32";
+        }, {
+            readonly name: "roundsCheckedInEpoch";
+            readonly type: "uint8";
+            readonly internalType: "uint8";
         }, {
             readonly name: "lastCheckinRound";
             readonly type: "uint8";
             readonly internalType: "uint8";
         }, {
             readonly name: "lastCheckinEpoch";
-            readonly type: "uint192";
-            readonly internalType: "uint192";
+            readonly type: "uint96";
+            readonly internalType: "uint96";
+        }, {
+            readonly name: "executionsInEpochCreatedBeforeEpoch";
+            readonly type: "uint96";
+            readonly internalType: "uint96";
         }, {
             readonly name: "stakingTimestamp";
             readonly type: "uint256";
@@ -135,9 +147,25 @@ export declare const querierAbi: readonly [{
             readonly type: "bool";
             readonly internalType: "bool";
         }, {
-            readonly name: "inactiveGracePeriod";
-            readonly type: "uint40";
-            readonly internalType: "uint40";
+            readonly name: "sponsorFallbackToOwner";
+            readonly type: "bool";
+            readonly internalType: "bool";
+        }, {
+            readonly name: "sponsorCanUpdateFeeModule";
+            readonly type: "bool";
+            readonly internalType: "bool";
+        }, {
+            readonly name: "executionModule";
+            readonly type: "bytes1";
+            readonly internalType: "bytes1";
+        }, {
+            readonly name: "feeModule";
+            readonly type: "bytes1";
+            readonly internalType: "bytes1";
+        }, {
+            readonly name: "executionWindow";
+            readonly type: "uint32";
+            readonly internalType: "uint32";
         }, {
             readonly name: "sponsor";
             readonly type: "address";
@@ -155,17 +183,9 @@ export declare const querierAbi: readonly [{
             readonly type: "address";
             readonly internalType: "contract IApplication";
         }, {
-            readonly name: "executionModule";
-            readonly type: "bytes1";
-            readonly internalType: "bytes1";
-        }, {
-            readonly name: "feeModule";
-            readonly type: "bytes1";
-            readonly internalType: "bytes1";
-        }, {
-            readonly name: "executionWindow";
-            readonly type: "uint32";
-            readonly internalType: "uint32";
+            readonly name: "creationTime";
+            readonly type: "uint96";
+            readonly internalType: "uint96";
         }, {
             readonly name: "executionModuleData";
             readonly type: "bytes";

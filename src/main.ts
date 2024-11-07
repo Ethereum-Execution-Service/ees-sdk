@@ -6,11 +6,11 @@ import { EESSDK } from "./EESSDK";
 
 async function main() {
   
-  const configProviderAddress = "0x33415837047dA5550Ef8ccEDF0F00eE17921a33E";
+  const configProviderAddress = "0xf86Ad0D7C211ffb8dd3A58a7676630c458631760";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
 
-  const applicationAddress: `0x${string}` = "0x1202547645ADEeE75a0637E0b0815A6A41764738";
+  const applicationAddress: `0x${string}` = "0x672ADD38dd4aFd6e8159f19CC59b7812EedC8532";
 
 
   const jobSpecification: JobSpecification = {
@@ -19,7 +19,9 @@ async function main() {
     application: applicationAddress,
     executionWindow: 60,
     maxExecutions: 0,
-    inactiveGracePeriod: 0,
+    reusableNonce: false,
+    sponsorFallbackToOwner: false,
+    sponsorCanUpdateFeeModule: false,
     ignoreAppRevert: false,
     executionModule: "0x00",
     feeModule: "0x00",
@@ -28,7 +30,7 @@ async function main() {
           {name: 'cooldown', type: 'uint32'},
           { name: 'initialExecutionTime', type: 'uint40' }
       ],
-      [100, 1730150170]),
+      [100, 1730288580]),
     feeModuleInput: encodeAbiParameters(
       [
         { name: 'executionFeeToken', type: 'address' },
@@ -77,7 +79,7 @@ async function main() {
   
   
 
-  /*
+  
   await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((result) => {
     console.log(result.transactionReceipt);
   });
@@ -85,7 +87,8 @@ async function main() {
   await eesSdk.stake({ simulate: true }).then((result) => {
     console.log(result.transactionReceipt);
   });
-  */
+  
+  
   
   
   
@@ -157,12 +160,14 @@ async function main() {
     console.log(res);
   })
     */
+    
 
   /*
   await eesSdk.topup(parseUnits("5000", 6), { waitForReceipt: true }).then((res) => {
     console.log(res);
   });
   */
+  
     
     
   
@@ -187,9 +192,11 @@ async function main() {
   //console.log(txReceipt);
 
 
+  /*
   await eesSdk.getExecutorInfo(["0xCE02d0981c1D4dCA9331178F322506C06E394bb0"]).then((res) => {
     console.log(res);
   });
+  */
   
   console.log("----- main finished ------");
 

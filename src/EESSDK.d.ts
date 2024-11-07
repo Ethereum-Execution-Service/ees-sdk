@@ -141,21 +141,21 @@ export interface EESSDK {
    * @param indices - An array of indices of jobs to execute.
    * @param gasLimits - An array of gas limits for each job.
    * @param feeRecipient - The address of the fee recipient.
-   * @param checkIn - A boolean flag indicating whether to check in.
+   * @param jobRegistryIndex - The index of the job registry.
    * @param options - Optional contract call options.
    * @returns A promise that resolves to an object containing the transaction hash and optionally receipt and failed job indices if waitForReceipt is set true in options.
    */
-  executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }>;
+  executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, jobRegistryIndex: number, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }>;
 
   /**
    * Estimates the gas for executing a batch of jobs in ExecutionManager.
    * @param indices - An array of indices of jobs to execute.
    * @param gasLimits - An array of gas limits for each job.
    * @param feeRecipient - The address of the fee recipient.
-   * @param checkIn - A boolean flag indicating whether to check in.
+   * @param jobRegistryIndex - The index of the job registry.
    * @returns A promise that resolves to the estimated gas.
    */
-  estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, checkIn: boolean) : Promise<bigint>;
+  estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, jobRegistryIndex: number) : Promise<bigint>;
 
   /**
    * Estimates the gas for calling "execute" on a single job in JobRegistry.

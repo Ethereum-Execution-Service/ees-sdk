@@ -56,6 +56,18 @@ export declare const jobRegistryAbi: readonly [{
             readonly type: "uint256";
             readonly internalType: "uint256";
         }, {
+            readonly name: "reusableNonce";
+            readonly type: "bool";
+            readonly internalType: "bool";
+        }, {
+            readonly name: "sponsorFallbackToOwner";
+            readonly type: "bool";
+            readonly internalType: "bool";
+        }, {
+            readonly name: "sponsorCanUpdateFeeModule";
+            readonly type: "bool";
+            readonly internalType: "bool";
+        }, {
             readonly name: "application";
             readonly type: "address";
             readonly internalType: "contract IApplication";
@@ -67,10 +79,6 @@ export declare const jobRegistryAbi: readonly [{
             readonly name: "maxExecutions";
             readonly type: "uint48";
             readonly internalType: "uint48";
-        }, {
-            readonly name: "inactiveGracePeriod";
-            readonly type: "uint40";
-            readonly internalType: "uint40";
         }, {
             readonly name: "ignoreAppRevert";
             readonly type: "bool";
@@ -104,10 +112,6 @@ export declare const jobRegistryAbi: readonly [{
         readonly name: "_sponsorSignature";
         readonly type: "bytes";
         readonly internalType: "bytes";
-    }, {
-        readonly name: "_hasSponsorship";
-        readonly type: "bool";
-        readonly internalType: "bool";
     }, {
         readonly name: "_index";
         readonly type: "uint256";
@@ -152,6 +156,10 @@ export declare const jobRegistryAbi: readonly [{
         readonly internalType: "address";
     }];
     readonly outputs: readonly [{
+        readonly name: "";
+        readonly type: "uint96";
+        readonly internalType: "uint96";
+    }, {
         readonly name: "";
         readonly type: "uint256";
         readonly internalType: "uint256";
@@ -211,27 +219,13 @@ export declare const jobRegistryAbi: readonly [{
     readonly stateMutability: "view";
 }, {
     readonly type: "function";
-    readonly name: "inactiveGracePeriodEnds";
-    readonly inputs: readonly [{
-        readonly name: "";
-        readonly type: "uint256";
-        readonly internalType: "uint256";
-    }];
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly type: "uint256";
-        readonly internalType: "uint256";
-    }];
-    readonly stateMutability: "view";
-}, {
-    readonly type: "function";
     readonly name: "invalidateUnorderedNonces";
     readonly inputs: readonly [{
-        readonly name: "wordPos";
+        readonly name: "_wordPos";
         readonly type: "uint256";
         readonly internalType: "uint256";
     }, {
-        readonly name: "mask";
+        readonly name: "_mask";
         readonly type: "uint256";
         readonly internalType: "uint256";
     }];
@@ -258,9 +252,25 @@ export declare const jobRegistryAbi: readonly [{
         readonly type: "bool";
         readonly internalType: "bool";
     }, {
-        readonly name: "inactiveGracePeriod";
-        readonly type: "uint40";
-        readonly internalType: "uint40";
+        readonly name: "sponsorFallbackToOwner";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "sponsorCanUpdateFeeModule";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }, {
+        readonly name: "executionModule";
+        readonly type: "bytes1";
+        readonly internalType: "bytes1";
+    }, {
+        readonly name: "feeModule";
+        readonly type: "bytes1";
+        readonly internalType: "bytes1";
+    }, {
+        readonly name: "executionWindow";
+        readonly type: "uint32";
+        readonly internalType: "uint32";
     }, {
         readonly name: "sponsor";
         readonly type: "address";
@@ -278,17 +288,9 @@ export declare const jobRegistryAbi: readonly [{
         readonly type: "address";
         readonly internalType: "contract IApplication";
     }, {
-        readonly name: "executionModule";
-        readonly type: "bytes1";
-        readonly internalType: "bytes1";
-    }, {
-        readonly name: "feeModule";
-        readonly type: "bytes1";
-        readonly internalType: "bytes1";
-    }, {
-        readonly name: "executionWindow";
-        readonly type: "uint32";
-        readonly internalType: "uint32";
+        readonly name: "creationTime";
+        readonly type: "uint96";
+        readonly internalType: "uint96";
     }];
     readonly stateMutability: "view";
 }, {
@@ -355,6 +357,10 @@ export declare const jobRegistryAbi: readonly [{
             readonly type: "uint256";
             readonly internalType: "uint256";
         }, {
+            readonly name: "reusableNonce";
+            readonly type: "bool";
+            readonly internalType: "bool";
+        }, {
             readonly name: "index";
             readonly type: "uint256";
             readonly internalType: "uint256";
@@ -375,10 +381,6 @@ export declare const jobRegistryAbi: readonly [{
         readonly name: "_sponsorSignature";
         readonly type: "bytes";
         readonly internalType: "bytes";
-    }, {
-        readonly name: "_hasSponsorship";
-        readonly type: "bool";
-        readonly internalType: "bool";
     }];
     readonly outputs: readonly [];
     readonly stateMutability: "nonpayable";
@@ -553,10 +555,6 @@ export declare const jobRegistryAbi: readonly [{
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
-    readonly name: "InvalidInactiveGracePeriod";
-    readonly inputs: readonly [];
-}, {
-    readonly type: "error";
     readonly name: "InvalidNonce";
     readonly inputs: readonly [];
 }, {
@@ -578,10 +576,6 @@ export declare const jobRegistryAbi: readonly [{
 }, {
     readonly type: "error";
     readonly name: "JobInExecutionMode";
-    readonly inputs: readonly [];
-}, {
-    readonly type: "error";
-    readonly name: "JobInGracePeriod";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";

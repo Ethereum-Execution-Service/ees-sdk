@@ -6,11 +6,13 @@ export interface Job {
   sponsor: `0x${string}`,
   active: boolean,
   ignoreAppRevert: boolean,
-  inactiveGracePeriod: number,
+  sponsorFallbackToOwner: boolean,
+  sponsorCanUpdateFeeModule: boolean,
   application: `0x${string}`,
   executionWindow: number,
   executionCounter: number,
   maxExecutions: number,
+  creationTime: bigint,
   executionModuleCode: `0x${string}`,
   feeModuleCode: `0x${string}`,
   executionModule: RegularTimeInterval,
@@ -28,7 +30,8 @@ export interface EpochInfo {
   roundPeriods: [bigint, bigint][],
   roundBufferPeriods: [bigint, bigint][],
   slashingPhasePeriod: [bigint, bigint],
-  selectedExecutors: `0x${string}`[]
+  selectedExecutors: `0x${string}`[],
+  poolBalance: bigint
 }
 
 export interface ExecutorInfo {
@@ -36,8 +39,10 @@ export interface ExecutorInfo {
   active: boolean;
   initialized: boolean;
   arrayIndex: number;
+  roundsCheckedInEpoch: number;
   lastCheckinRound: number;
   lastCheckinEpoch: bigint;
+  executionsInEpochCreatedBeforeEpoch: bigint;
   stakingTimestamp: bigint;
 }
 
@@ -69,10 +74,12 @@ export interface LinearAuction {
 export interface JobSpecification {
   nonce: bigint,
   deadline: bigint,
+  reusableNonce: boolean,
+  sponsorFallbackToOwner: boolean,
+  sponsorCanUpdateFeeModule: boolean,
   application: `0x${string}`,
   executionWindow: number,
   maxExecutions: number,
-  inactiveGracePeriod: number,
   ignoreAppRevert: boolean,
   executionModule: `0x${string}`,
   feeModule: `0x${string}`,

@@ -32,12 +32,12 @@ export declare class EESSDK {
     getExecutorInfo(executors: `0x${string}`[]): Promise<ExecutorInfo[]>;
     getEpochInfo(): Promise<EpochInfo>;
     getCommitData(executors: `0x${string}`[]): Promise<CommitData[]>;
-    executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, options?: ContractCallOptions): Promise<{
+    executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, jobRegistryIndex: number, options?: ContractCallOptions): Promise<{
         transactionHash: `0x${string}`;
         transactionReceipt?: TransactionReceipt;
         failedIndices?: bigint[];
     }>;
-    estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`): Promise<bigint>;
+    estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, jobRegistryIndex: number): Promise<bigint>;
     estimateExecutionGas(index: bigint, feeRecipient: `0x${string}`): Promise<bigint>;
     revokeSponsorship(index: bigint, options?: ContractCallOptions): Promise<{
         transactionHash: `0x${string}`;

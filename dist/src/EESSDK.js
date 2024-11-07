@@ -276,10 +276,12 @@ class EESSDK {
                 JobSpecification: [
                     { name: 'nonce', type: 'uint256' },
                     { name: 'deadline', type: 'uint256' },
+                    { name: 'reusableNonce', type: 'bool' },
+                    { name: 'sponsorFallbackToOwner', type: 'bool' },
+                    { name: 'sponsorCanUpdateFeeModule', type: 'bool' },
                     { name: 'application', type: 'address' },
                     { name: 'executionWindow', type: 'uint32' },
                     { name: 'maxExecutions', type: 'uint48' },
-                    { name: 'inactiveGracePeriod', type: 'uint40' },
                     { name: 'ignoreAppRevert', type: 'bool' },
                     { name: 'executionModule', type: 'bytes1' },
                     { name: 'feeModule', type: 'bytes1' },
@@ -292,10 +294,12 @@ class EESSDK {
             message: {
                 nonce: jobSpecification.nonce,
                 deadline: jobSpecification.deadline,
+                reusableNonce: jobSpecification.reusableNonce,
+                sponsorFallbackToOwner: jobSpecification.sponsorFallbackToOwner,
+                sponsorCanUpdateFeeModule: jobSpecification.sponsorCanUpdateFeeModule,
                 application: jobSpecification.application,
                 executionWindow: jobSpecification.executionWindow,
                 maxExecutions: jobSpecification.maxExecutions,
-                inactiveGracePeriod: jobSpecification.inactiveGracePeriod,
                 ignoreAppRevert: jobSpecification.ignoreAppRevert,
                 executionModule: jobSpecification.executionModule,
                 feeModule: jobSpecification.feeModule,
@@ -374,7 +378,8 @@ class EESSDK {
             roundPeriods: roundPeriods,
             roundBufferPeriods: roundBufferPeriods,
             slashingPhasePeriod: [data[1] - BigInt(this.protocolConfig.slashingDuration), data[1]],
-            selectedExecutors: data[4]
+            selectedExecutors: data[4],
+            poolBalance: data[5]
         };
         return epochInfo;
     }
@@ -391,13 +396,13 @@ class EESSDK {
             ...data[index]
         }));
     }
-    async executeBatch(indices, gasLimits, feeRecipient, options) {
+    async executeBatch(indices, gasLimits, feeRecipient, jobRegistryIndex, options) {
         this.checkProtocolConfig();
         const result = await this.executeTransaction({
             address: this.protocolConfig.coordinator,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'executeBatch',
-            args: [indices, gasLimits, feeRecipient],
+            args: [indices, gasLimits, feeRecipient, jobRegistryIndex],
         }, options);
         let failedIndices;
         if (result.transactionReceipt) {
@@ -415,13 +420,13 @@ class EESSDK {
             failedIndices
         };
     }
-    async estimateBatchExecutionGas(indices, gasLimits, feeRecipient) {
+    async estimateBatchExecutionGas(indices, gasLimits, feeRecipient, jobRegistryIndex) {
         this.checkProtocolConfig();
         const gas = await this.publicClient.estimateContractGas({
             address: this.protocolConfig.coordinator,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'executeBatch',
-            args: [indices, gasLimits, feeRecipient],
+            args: [indices, gasLimits, feeRecipient, jobRegistryIndex],
         });
         return gas;
     }
@@ -633,12 +638,14 @@ class EESSDK {
             owner: jobData.owner,
             active: jobData.active,
             ignoreAppRevert: jobData.ignoreAppRevert,
-            inactiveGracePeriod: jobData.inactiveGracePeriod,
+            sponsorFallbackToOwner: jobData.sponsorFallbackToOwner,
+            sponsorCanUpdateFeeModule: jobData.sponsorCanUpdateFeeModule,
             sponsor: jobData.sponsor,
             application: jobData.application,
             executionWindow: jobData.executionWindow,
             executionCounter: jobData.executionCounter,
             maxExecutions: jobData.maxExecutions,
+            creationTime: jobData.creationTime,
             executionModuleCode: jobData.executionModule,
             feeModuleCode: jobData.feeModule,
             executionModule: executionModule,

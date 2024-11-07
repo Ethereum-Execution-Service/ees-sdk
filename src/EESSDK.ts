@@ -209,7 +209,7 @@ export class EESSDK {
       address: this.protocolConfig!.jobRegistry,
       abi: jobRegistryAbi,
       functionName: 'createJob',
-      args: [jobSpecification as { nonce: bigint; deadline: bigint; application: `0x${string}`; executionWindow: number; maxExecutions: number; inactiveGracePeriod: number; ignoreAppRevert: boolean; executionModule: `0x${string}`; feeModule: `0x${string}`; executionModuleInput: `0x${string}`; feeModuleInput: `0x${string}`; applicationInput: `0x${string}`}, sponsor, sponsorSignature, hasSponsorship, index],
+      args: [jobSpecification as { nonce: bigint; deadline: bigint; application: `0x${string}`; executionWindow: number; maxExecutions: number; reusableNonce: boolean; sponsorFallbackToOwner: boolean; sponsorCanUpdateFeeModule: boolean; inactiveGracePeriod: number; ignoreAppRevert: boolean; executionModule: `0x${string}`; feeModule: `0x${string}`; executionModuleInput: `0x${string}`; feeModuleInput: `0x${string}`; applicationInput: `0x${string}`}, sponsor, sponsorSignature, hasSponsorship, index],
     }, options);
 
     let jobIndex: bigint | undefined;
@@ -310,10 +310,12 @@ export class EESSDK {
         JobSpecification: [
           { name: 'nonce', type: 'uint256' },
           { name: 'deadline', type: 'uint256' },
+          { name: 'reusableNonce', type: 'bool' },
+          { name: 'sponsorFallbackToOwner', type: 'bool' },
+          { name: 'sponsorCanUpdateFeeModule', type: 'bool' },
           { name: 'application', type: 'address' },
           { name: 'executionWindow', type: 'uint32' },
           { name: 'maxExecutions', type: 'uint48' },
-          { name: 'inactiveGracePeriod', type: 'uint40' },
           { name: 'ignoreAppRevert', type: 'bool' },
           { name: 'executionModule', type: 'bytes1'},
           { name: 'feeModule', type: 'bytes1'},
@@ -326,10 +328,12 @@ export class EESSDK {
       message: {
         nonce: jobSpecification.nonce,
         deadline: jobSpecification.deadline,
+        reusableNonce: jobSpecification.reusableNonce,
+        sponsorFallbackToOwner: jobSpecification.sponsorFallbackToOwner,
+        sponsorCanUpdateFeeModule: jobSpecification.sponsorCanUpdateFeeModule,
         application: jobSpecification.application,
         executionWindow: jobSpecification.executionWindow,
         maxExecutions: jobSpecification.maxExecutions,
-        inactiveGracePeriod: jobSpecification.inactiveGracePeriod,
         ignoreAppRevert: jobSpecification.ignoreAppRevert,
         executionModule: jobSpecification.executionModule,
         feeModule: jobSpecification.feeModule,
@@ -413,7 +417,8 @@ export class EESSDK {
       roundPeriods: roundPeriods,
       roundBufferPeriods: roundBufferPeriods,
       slashingPhasePeriod: [data[1] - BigInt(this.protocolConfig!.slashingDuration), data[1]],
-      selectedExecutors: data[4] as `0x${string}`[]
+      selectedExecutors: data[4] as `0x${string}`[],
+      poolBalance: data[5]
     }
     return epochInfo;
   }
@@ -433,13 +438,13 @@ export class EESSDK {
     }));
   }
   
-  async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }> {
+  async executeBatch(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, jobRegistryIndex: number, options?: ContractCallOptions) : Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; failedIndices?: bigint[] }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
       address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'executeBatch',
-      args: [indices, gasLimits, feeRecipient],
+      args: [indices, gasLimits, feeRecipient, jobRegistryIndex],
     }, options);
 
     let failedIndices: bigint[] | undefined;
@@ -464,13 +469,13 @@ export class EESSDK {
     };
   }
 
-  async estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`) : Promise<bigint> {
+  async estimateBatchExecutionGas(indices: bigint[], gasLimits: bigint[], feeRecipient: `0x${string}`, jobRegistryIndex: number) : Promise<bigint> {
     this.checkProtocolConfig();
     const gas = await this.publicClient.estimateContractGas({
       address: this.protocolConfig!.coordinator,
       abi: coordinatorAbi,
       functionName: 'executeBatch',
-      args: [indices, gasLimits, feeRecipient],
+      args: [indices, gasLimits, feeRecipient, jobRegistryIndex],
     });
     return gas;
   }
@@ -687,12 +692,14 @@ export class EESSDK {
     owner: `0x${string}`,
     active: boolean,
     ignoreAppRevert: boolean,
-    inactiveGracePeriod: number,
+    sponsorFallbackToOwner: boolean,
+  sponsorCanUpdateFeeModule: boolean,
     sponsor: `0x${string}`,
     application: `0x${string}`,
     executionWindow: number,
     executionCounter: number,
     maxExecutions: number,
+    creationTime: bigint,
     executionModule: `0x${string}`,
     feeModule: `0x${string}`,
     executionModuleData: `0x${string}`,
@@ -733,12 +740,14 @@ export class EESSDK {
       owner: jobData.owner,
       active: jobData.active,
       ignoreAppRevert: jobData.ignoreAppRevert,
-      inactiveGracePeriod: jobData.inactiveGracePeriod,
+      sponsorFallbackToOwner: jobData.sponsorFallbackToOwner,
+      sponsorCanUpdateFeeModule: jobData.sponsorCanUpdateFeeModule,
       sponsor: jobData.sponsor,
       application: jobData.application,
       executionWindow: jobData.executionWindow,
       executionCounter: jobData.executionCounter,
       maxExecutions: jobData.maxExecutions,
+      creationTime: jobData.creationTime,
       executionModuleCode: jobData.executionModule,
       feeModuleCode: jobData.feeModule,
       executionModule: executionModule!,
