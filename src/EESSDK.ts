@@ -418,7 +418,8 @@ export class EESSDK {
       roundBufferPeriods: roundBufferPeriods,
       slashingPhasePeriod: [data[1] - BigInt(this.protocolConfig!.slashingDuration), data[1]],
       selectedExecutors: data[4] as `0x${string}`[],
-      poolBalance: data[5]
+      epochPoolBalance: data[5],
+      nextEpochPoolBalance: data[6]
     }
     return epochInfo;
   }

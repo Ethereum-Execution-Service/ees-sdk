@@ -65,6 +65,10 @@ export declare const querierAbi: readonly [{
         readonly name: "";
         readonly type: "uint256";
         readonly internalType: "uint256";
+    }, {
+        readonly name: "";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
     }];
     readonly stateMutability: "view";
 }, {

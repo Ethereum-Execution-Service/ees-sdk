@@ -31,7 +31,8 @@ export interface EpochInfo {
   roundBufferPeriods: [bigint, bigint][],
   slashingPhasePeriod: [bigint, bigint],
   selectedExecutors: `0x${string}`[],
-  poolBalance: bigint
+  epochPoolBalance: bigint,
+  nextEpochPoolBalance: bigint
 }
 
 export interface ExecutorInfo {

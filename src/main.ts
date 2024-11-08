@@ -79,7 +79,7 @@ async function main() {
   
   
 
-  
+  /*
   await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((result) => {
     console.log(result.transactionReceipt);
   });
@@ -87,6 +87,7 @@ async function main() {
   await eesSdk.stake({ simulate: true }).then((result) => {
     console.log(result.transactionReceipt);
   });
+  */
   
   
   
@@ -115,11 +116,15 @@ async function main() {
   await eesSdk.initiateEpoch().then((res) => {
     console.log(res.transactionHash);
   });
+  */
+
+  /*
   await eesSdk.commit(6n).then((res) => {
     console.log(res.transactionHash);
     console.log(res.secret);
   });
   */
+  
   //console.log("SIGNATURE: ", secret);
   
   
