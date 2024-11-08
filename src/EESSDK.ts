@@ -203,13 +203,13 @@ export class EESSDK {
     }
   }
 
-  async createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; jobIndex?: bigint }> {
+  async createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, index: bigint, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; jobIndex?: bigint }> {
     this.checkProtocolConfig();
     const result = await this.executeTransaction({
       address: this.protocolConfig!.jobRegistry,
       abi: jobRegistryAbi,
       functionName: 'createJob',
-      args: [jobSpecification as { nonce: bigint; deadline: bigint; application: `0x${string}`; executionWindow: number; maxExecutions: number; reusableNonce: boolean; sponsorFallbackToOwner: boolean; sponsorCanUpdateFeeModule: boolean; inactiveGracePeriod: number; ignoreAppRevert: boolean; executionModule: `0x${string}`; feeModule: `0x${string}`; executionModuleInput: `0x${string}`; feeModuleInput: `0x${string}`; applicationInput: `0x${string}`}, sponsor, sponsorSignature, hasSponsorship, index],
+      args: [jobSpecification as { nonce: bigint; deadline: bigint; application: `0x${string}`; executionWindow: number; maxExecutions: number; reusableNonce: boolean; sponsorFallbackToOwner: boolean; sponsorCanUpdateFeeModule: boolean; inactiveGracePeriod: number; ignoreAppRevert: boolean; executionModule: `0x${string}`; feeModule: `0x${string}`; executionModuleInput: `0x${string}`; feeModuleInput: `0x${string}`; applicationInput: `0x${string}`}, sponsor, sponsorSignature, index],
     }, options);
 
     let jobIndex: bigint | undefined;
@@ -694,7 +694,7 @@ export class EESSDK {
     active: boolean,
     ignoreAppRevert: boolean,
     sponsorFallbackToOwner: boolean,
-  sponsorCanUpdateFeeModule: boolean,
+    sponsorCanUpdateFeeModule: boolean,
     sponsor: `0x${string}`,
     application: `0x${string}`,
     executionWindow: number,

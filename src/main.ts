@@ -6,11 +6,11 @@ import { EESSDK } from "./EESSDK";
 
 async function main() {
   
-  const configProviderAddress = "0xf86Ad0D7C211ffb8dd3A58a7676630c458631760";
+  const configProviderAddress = "0x216656149b5CDd0588DD3dccCEBdfb07342b83Df";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
 
-  const applicationAddress: `0x${string}` = "0x672ADD38dd4aFd6e8159f19CC59b7812EedC8532";
+  const applicationAddress: `0x${string}` = "0x04DBf8beAb1ccFc4359640A66dBfe98f83329ABe";
 
 
   const jobSpecification: JobSpecification = {
@@ -74,6 +74,7 @@ async function main() {
     console.log(result.transactionReceipt);
   });
   */
+  
   
   
   
@@ -160,11 +161,12 @@ async function main() {
   //console.log(domainSeparator);
 
   
-  /*
-  await eesSdk.createJob(jobSpecification, walletClient.account?.address!, signature, true, 100n).then((res) => {
+  
+  await eesSdk.createJob(jobSpecification, walletClient.account?.address!, signature, 100n).then((res) => {
     console.log(res);
   })
-    */
+    
+    
     
 
   /*
