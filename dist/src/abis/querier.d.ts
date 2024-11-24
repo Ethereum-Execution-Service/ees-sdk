@@ -112,11 +112,15 @@ export declare const querierAbi: readonly [{
             readonly type: "uint96";
             readonly internalType: "uint96";
         }, {
-            readonly name: "executionsInEpochCreatedBeforeEpoch";
+            readonly name: "executionsInRoundsInEpoch";
             readonly type: "uint96";
             readonly internalType: "uint96";
         }, {
-            readonly name: "stakingTimestamp";
+            readonly name: "lastRegistrationTimestamp";
+            readonly type: "uint256";
+            readonly internalType: "uint256";
+        }, {
+            readonly name: "registeredModules";
             readonly type: "uint256";
             readonly internalType: "uint256";
         }];
@@ -168,8 +172,12 @@ export declare const querierAbi: readonly [{
             readonly internalType: "bytes1";
         }, {
             readonly name: "executionWindow";
-            readonly type: "uint32";
-            readonly internalType: "uint32";
+            readonly type: "uint24";
+            readonly internalType: "uint24";
+        }, {
+            readonly name: "zeroFeeWindow";
+            readonly type: "uint24";
+            readonly internalType: "uint24";
         }, {
             readonly name: "sponsor";
             readonly type: "address";

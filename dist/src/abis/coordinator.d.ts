@@ -9,23 +9,23 @@ export declare const coordinatorAbi: readonly [{
             readonly type: "address";
             readonly internalType: "address";
         }, {
-            readonly name: "stakingAmount";
+            readonly name: "stakingAmountPerModule";
             readonly type: "uint256";
             readonly internalType: "uint256";
         }, {
-            readonly name: "minimumStakingPeriod";
+            readonly name: "minimumRegistrationPeriod";
             readonly type: "uint256";
             readonly internalType: "uint256";
         }, {
-            readonly name: "stakingBalanceThreshold";
+            readonly name: "stakingBalanceThresholdPerModule";
             readonly type: "uint256";
             readonly internalType: "uint256";
         }, {
-            readonly name: "inactiveSlashingAmount";
+            readonly name: "inactiveSlashingAmountPerModule";
             readonly type: "uint256";
             readonly internalType: "uint256";
         }, {
-            readonly name: "commitSlashingAmount";
+            readonly name: "commitSlashingAmountPerModule";
             readonly type: "uint256";
             readonly internalType: "uint256";
         }, {
@@ -53,11 +53,15 @@ export declare const coordinatorAbi: readonly [{
             readonly type: "uint8";
             readonly internalType: "uint8";
         }, {
-            readonly name: "executorTax";
+            readonly name: "executionTax";
             readonly type: "uint256";
             readonly internalType: "uint256";
         }, {
-            readonly name: "protocolTax";
+            readonly name: "zeroFeeExecutionTax";
+            readonly type: "uint256";
+            readonly internalType: "uint256";
+        }, {
+            readonly name: "protocolPoolCutBps";
             readonly type: "uint256";
             readonly internalType: "uint256";
         }];
@@ -81,6 +85,26 @@ export declare const coordinatorAbi: readonly [{
         readonly internalType: "address";
     }];
     readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "addExecutionModule";
+    readonly inputs: readonly [{
+        readonly name: "_module";
+        readonly type: "address";
+        readonly internalType: "contract IExecutionModule";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "addFeeModule";
+    readonly inputs: readonly [{
+        readonly name: "_module";
+        readonly type: "address";
+        readonly internalType: "contract IFeeModule";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
     readonly name: "addJobRegistry";
@@ -123,6 +147,16 @@ export declare const coordinatorAbi: readonly [{
         readonly internalType: "bool";
     }];
     readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "deregisterModules";
+    readonly inputs: readonly [{
+        readonly name: "_modulesBitset";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
     readonly name: "epoch";
@@ -174,11 +208,29 @@ export declare const coordinatorAbi: readonly [{
         readonly internalType: "uint8";
     }];
     readonly outputs: readonly [{
-        readonly name: "failedIndices";
-        readonly type: "uint256[]";
-        readonly internalType: "uint256[]";
+        readonly name: "";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }, {
+        readonly name: "";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }, {
+        readonly name: "";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
     }];
     readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "executedJobsInRoundsOfEpoch";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly name: "";
+        readonly type: "uint96";
+        readonly internalType: "uint96";
+    }];
+    readonly stateMutability: "view";
 }, {
     readonly type: "function";
     readonly name: "executorInfo";
@@ -216,11 +268,15 @@ export declare const coordinatorAbi: readonly [{
         readonly type: "uint96";
         readonly internalType: "uint96";
     }, {
-        readonly name: "executionsInEpochCreatedBeforeEpoch";
+        readonly name: "executionsInRoundsInEpoch";
         readonly type: "uint96";
         readonly internalType: "uint96";
     }, {
-        readonly name: "stakingTimestamp";
+        readonly name: "lastRegistrationTimestamp";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }, {
+        readonly name: "registeredModules";
         readonly type: "uint256";
         readonly internalType: "uint256";
     }];
@@ -261,6 +317,20 @@ export declare const coordinatorAbi: readonly [{
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
+    readonly name: "isJobRegistry";
+    readonly inputs: readonly [{
+        readonly name: "";
+        readonly type: "address";
+        readonly internalType: "address";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "";
+        readonly type: "bool";
+        readonly internalType: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
     readonly name: "jobRegistries";
     readonly inputs: readonly [{
         readonly name: "";
@@ -271,6 +341,24 @@ export declare const coordinatorAbi: readonly [{
         readonly name: "";
         readonly type: "address";
         readonly internalType: "address";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "modules";
+    readonly inputs: readonly [{
+        readonly name: "";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "module";
+        readonly type: "address";
+        readonly internalType: "address";
+    }, {
+        readonly name: "isExecutionModule";
+        readonly type: "bool";
+        readonly internalType: "bool";
     }];
     readonly stateMutability: "view";
 }, {
@@ -329,6 +417,16 @@ export declare const coordinatorAbi: readonly [{
     readonly stateMutability: "view";
 }, {
     readonly type: "function";
+    readonly name: "registerModules";
+    readonly inputs: readonly [{
+        readonly name: "_modulesBitset";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
     readonly name: "reveal";
     readonly inputs: readonly [{
         readonly name: "_signature";
@@ -382,8 +480,16 @@ export declare const coordinatorAbi: readonly [{
 }, {
     readonly type: "function";
     readonly name: "stake";
-    readonly inputs: readonly [];
-    readonly outputs: readonly [];
+    readonly inputs: readonly [{
+        readonly name: "_modulesBitset";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "stakingAmount";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
@@ -395,16 +501,6 @@ export declare const coordinatorAbi: readonly [{
     }];
     readonly outputs: readonly [];
     readonly stateMutability: "nonpayable";
-}, {
-    readonly type: "function";
-    readonly name: "totalNumberOfExecutedJobsCreatedBeforeEpoch";
-    readonly inputs: readonly [];
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly type: "uint256";
-        readonly internalType: "uint256";
-    }];
-    readonly stateMutability: "view";
 }, {
     readonly type: "function";
     readonly name: "transferOwnership";
@@ -423,9 +519,9 @@ export declare const coordinatorAbi: readonly [{
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
-    readonly name: "updateExecutorTax";
+    readonly name: "updateExecutionTax";
     readonly inputs: readonly [{
-        readonly name: "_executorTax";
+        readonly name: "_executionTax";
         readonly type: "uint256";
         readonly internalType: "uint256";
     }];
@@ -433,9 +529,19 @@ export declare const coordinatorAbi: readonly [{
     readonly stateMutability: "nonpayable";
 }, {
     readonly type: "function";
-    readonly name: "updateProtocolTax";
+    readonly name: "updateProtocolPoolCutBps";
     readonly inputs: readonly [{
-        readonly name: "_protocolTax";
+        readonly name: "_protocolPoolCutBps";
+        readonly type: "uint256";
+        readonly internalType: "uint256";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "updateZeroFeeExecutionTax";
+    readonly inputs: readonly [{
+        readonly name: "_zeroFeeExecutionTax";
         readonly type: "uint256";
         readonly internalType: "uint256";
     }];
@@ -460,17 +566,12 @@ export declare const coordinatorAbi: readonly [{
         readonly indexed: false;
         readonly internalType: "uint8";
     }, {
-        readonly name: "failedIndices";
-        readonly type: "uint256[]";
-        readonly indexed: false;
-        readonly internalType: "uint256[]";
-    }, {
-        readonly name: "totalProtocolTax";
+        readonly name: "standardTax";
         readonly type: "uint256";
         readonly indexed: false;
         readonly internalType: "uint256";
     }, {
-        readonly name: "totalExecutorTax";
+        readonly name: "zeroFeeTax";
         readonly type: "uint256";
         readonly indexed: false;
         readonly internalType: "uint256";
@@ -524,6 +625,11 @@ export declare const coordinatorAbi: readonly [{
         readonly type: "uint256";
         readonly indexed: false;
         readonly internalType: "uint256";
+    }, {
+        readonly name: "protocolCut";
+        readonly type: "uint256";
+        readonly indexed: false;
+        readonly internalType: "uint256";
     }];
     readonly anonymous: false;
 }, {
@@ -544,6 +650,36 @@ export declare const coordinatorAbi: readonly [{
         readonly type: "address";
         readonly indexed: true;
         readonly internalType: "address";
+    }];
+    readonly anonymous: false;
+}, {
+    readonly type: "event";
+    readonly name: "ModulesDeregistered";
+    readonly inputs: readonly [{
+        readonly name: "executor";
+        readonly type: "address";
+        readonly indexed: true;
+        readonly internalType: "address";
+    }, {
+        readonly name: "modulesBitset";
+        readonly type: "uint256";
+        readonly indexed: true;
+        readonly internalType: "uint256";
+    }];
+    readonly anonymous: false;
+}, {
+    readonly type: "event";
+    readonly name: "ModulesRegistered";
+    readonly inputs: readonly [{
+        readonly name: "executor";
+        readonly type: "address";
+        readonly indexed: true;
+        readonly internalType: "address";
+    }, {
+        readonly name: "modulesBitset";
+        readonly type: "uint256";
+        readonly indexed: true;
+        readonly internalType: "uint256";
     }];
     readonly anonymous: false;
 }, {
@@ -654,7 +790,19 @@ export declare const coordinatorAbi: readonly [{
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
+    readonly name: "DesignatedExecutorSupportsModules";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "ExecutorNotRegisteredForModules";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
     readonly name: "ExecutorNotSelectedForRound";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "FinalBalanceBelowMinimum";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
@@ -670,7 +818,11 @@ export declare const coordinatorAbi: readonly [{
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
-    readonly name: "MinimumStakingPeriodNotOver";
+    readonly name: "JobRegistryNotSet";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "MinimumRegistrationPeriodNotOver";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
@@ -679,6 +831,10 @@ export declare const coordinatorAbi: readonly [{
 }, {
     readonly type: "error";
     readonly name: "NotInitializedExecutor";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "NumberOfRegisteredModulesBelowMinimum";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
@@ -694,11 +850,11 @@ export declare const coordinatorAbi: readonly [{
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
-    readonly name: "TaxUpdateTooLarge";
+    readonly name: "SomeModulesAlreadyRegistered";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
-    readonly name: "TopupBelowMinimum";
+    readonly name: "TaxUpdateTooLarge";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";

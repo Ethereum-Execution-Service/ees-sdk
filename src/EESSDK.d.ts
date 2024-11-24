@@ -79,12 +79,12 @@ export interface EESSDK {
    * @param jobSpecification - Contains specification of the job.
    * @param sponsor - The sponsor address.
    * @param sponsorSignature - The EIP-712 sponsor signature of jobSpecification.
-   * @param hasSponsorship - A boolean flag indicating if the job is created with a sponsorship.
+   * @param ownerSignature - The EIP-712 owner signature of jobSpecification.
    * @param index - The index of the job.
    * @param options - Optional contract call options.
    * @returns A promise that resolves to an object containing the transaction hash optionally receipt and job index if waitForReceipt is set true in options..
    */
-  createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; jobIndex?: bigint }>;
+  createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, ownerSignature: `0x${string}`, index: bigint, options?: ContractCallOptions): Promise<{ transactionHash: `0x${string}`; transactionReceipt?: TransactionReceipt; jobIndex?: bigint }>;
 
   /**
    * Deletes a job.
@@ -96,12 +96,20 @@ export interface EESSDK {
   deleteJob(index: bigint) : Promise<TransactionReceipt>;
 
   /**
-   * Generates a sponsor signature for a given job specification.
+   * Generates a sponsor signature for a given job specification. This signature will not take the owneer of the job into account.
    * @throws An error if the class was not initialized with a walletClient.
    * @param jobSpecification - The JobSpecification object to generate a signature for.
    * @returns A promise that resolves to the generated signature.
    */
-  signJobSpecification(jobSpecification: JobSpecification) : Promise<`0x${string}`>;
+  signJobSpecificationSponsor(jobSpecification: JobSpecification) : Promise<`0x${string}`>;
+
+  /**
+   * Generates an owner signature for a given job specification.
+   * @throws An error if the class was not initialized with a walletClient.
+   * @param jobSpecification - The JobSpecification object to generate a signature for.
+   * @returns A promise that resolves to the generated signature.
+   */
+  signJobSpecificationOwner(jobSpecification: JobSpecification) : Promise<`0x${string}`>;
 
   /**
    * Generates a sponsor signature for a given fee module input.

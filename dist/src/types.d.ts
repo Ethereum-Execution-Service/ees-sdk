@@ -9,6 +9,7 @@ export interface Job {
     sponsorCanUpdateFeeModule: boolean;
     application: `0x${string}`;
     executionWindow: number;
+    zeroFeeWindow: number;
     executionCounter: number;
     maxExecutions: number;
     creationTime: bigint;
@@ -40,8 +41,9 @@ export interface ExecutorInfo {
     roundsCheckedInEpoch: number;
     lastCheckinRound: number;
     lastCheckinEpoch: bigint;
-    executionsInEpochCreatedBeforeEpoch: bigint;
-    stakingTimestamp: bigint;
+    executionsInRoundsInEpoch: bigint;
+    lastRegistrationTimestamp: bigint;
+    registeredModules: bigint;
 }
 export interface CommitData {
     executor: `0x${string}`;
@@ -65,6 +67,7 @@ export interface LinearAuction {
     maxExecutionFee: bigint;
 }
 export interface JobSpecification {
+    owner: `0x${string}`;
     nonce: bigint;
     deadline: bigint;
     reusableNonce: boolean;
@@ -72,6 +75,7 @@ export interface JobSpecification {
     sponsorCanUpdateFeeModule: boolean;
     application: `0x${string}`;
     executionWindow: number;
+    zeroFeeWindow: number;
     maxExecutions: number;
     ignoreAppRevert: boolean;
     executionModule: `0x${string}`;
@@ -86,17 +90,13 @@ export interface ProtocolConfig {
     querier: `0x${string}`;
     batchSlasher: `0x${string}`;
     executionGasOverhead: bigint;
-    executionModulesLength: bigint;
-    feeModulesLength: bigint;
     stakingToken: `0x${string}`;
-    stakingAmount: bigint;
-    minimumStakingPeriod: bigint;
-    stakingBalanceThreshold: bigint;
-    inactiveSlashingAmount: bigint;
-    commitSlashingAmount: bigint;
+    stakingAmountPerModule: bigint;
+    minimumRegistrationPeriod: bigint;
+    stakingBalanceThresholdPerModule: bigint;
+    inactiveSlashingAmountPerModule: bigint;
+    commitSlashingAmountPerModule: bigint;
     roundsPerEpoch: number;
-    executorTax: bigint;
-    protocolTax: bigint;
     roundDuration: number;
     roundBuffer: number;
     slashingDuration: number;
@@ -105,6 +105,10 @@ export interface ProtocolConfig {
     selectionPhaseDuration: number;
     totalRoundDuration: number;
     epochDuration: number;
+    modulesLength: bigint;
+    executionTax: bigint;
+    zeroFeeExecutionTax: bigint;
+    protocolPoolCutBps: bigint;
 }
 export interface FeeModuleInput {
     nonce: bigint;

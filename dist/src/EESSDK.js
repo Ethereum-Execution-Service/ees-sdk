@@ -35,25 +35,25 @@ class EESSDK {
             { name: 'batchSlasher', type: 'address' }
         ], config[0]);
         const decodedJobRegistryConfig = (0, viem_1.decodeAbiParameters)([
-            { name: 'executionGasOverhead', type: 'uint256' },
-            { name: 'executionModulesLength', type: 'uint256' },
-            { name: 'feeModulesLength', type: 'uint256' }
+            { name: 'executionGasOverhead', type: 'uint256' }
         ], config[1]);
         const decodedcoordinatorConfig = (0, viem_1.decodeAbiParameters)([
             { name: 'stakingToken', type: 'address' },
-            { name: 'stakingAmount', type: 'uint256' },
-            { name: 'minimumStakingPeriod', type: 'uint256' },
-            { name: 'stakingBalanceThreshold', type: 'uint256' },
-            { name: 'inactiveSlashingAmount', type: 'uint256' },
-            { name: 'commitSlashingAmount', type: 'uint256' },
+            { name: 'stakingAmountPerModule', type: 'uint256' },
+            { name: 'minimumRegistrationPeriod', type: 'uint256' },
+            { name: 'stakingBalanceThresholdPerModule', type: 'uint256' },
+            { name: 'inactiveSlashingAmountPerModule', type: 'uint256' },
+            { name: 'commitSlashingAmountPerModule', type: 'uint256' },
             { name: 'roundsPerEpoch', type: 'uint8' },
-            { name: 'executorTax', type: 'uint256' },
-            { name: 'protocolTax', type: 'uint256' },
             { name: 'roundDuration', type: 'uint8' },
             { name: 'roundBuffer', type: 'uint8' },
             { name: 'slashingDuration', type: 'uint8' },
             { name: 'commitPhaseDuration', type: 'uint8' },
-            { name: 'revealPhaseDuration', type: 'uint8' }
+            { name: 'revealPhaseDuration', type: 'uint8' },
+            { name: 'modulesLength', type: 'uint256' },
+            { name: 'executionTax', type: 'uint256' },
+            { name: 'zeroFeeExecutionTax', type: 'uint256' },
+            { name: 'protocolPoolCutBps', type: 'uint256' }
         ], config[2]);
         this.protocolConfig = {
             jobRegistry: decodedAddresses[0],
@@ -61,25 +61,25 @@ class EESSDK {
             querier: decodedAddresses[2],
             batchSlasher: decodedAddresses[3],
             executionGasOverhead: decodedJobRegistryConfig[0],
-            executionModulesLength: decodedJobRegistryConfig[1],
-            feeModulesLength: decodedJobRegistryConfig[2],
             stakingToken: decodedcoordinatorConfig[0],
-            stakingAmount: decodedcoordinatorConfig[1],
-            minimumStakingPeriod: decodedcoordinatorConfig[2],
-            stakingBalanceThreshold: decodedcoordinatorConfig[3],
-            inactiveSlashingAmount: decodedcoordinatorConfig[4],
-            commitSlashingAmount: decodedcoordinatorConfig[5],
+            stakingAmountPerModule: decodedcoordinatorConfig[1],
+            minimumRegistrationPeriod: decodedcoordinatorConfig[2],
+            stakingBalanceThresholdPerModule: decodedcoordinatorConfig[3],
+            inactiveSlashingAmountPerModule: decodedcoordinatorConfig[4],
+            commitSlashingAmountPerModule: decodedcoordinatorConfig[5],
             roundsPerEpoch: decodedcoordinatorConfig[6],
-            executorTax: decodedcoordinatorConfig[7],
-            protocolTax: decodedcoordinatorConfig[8],
-            roundDuration: decodedcoordinatorConfig[9],
-            roundBuffer: decodedcoordinatorConfig[10],
-            slashingDuration: decodedcoordinatorConfig[11],
-            commitPhaseDuration: decodedcoordinatorConfig[12],
-            revealPhaseDuration: decodedcoordinatorConfig[13],
-            selectionPhaseDuration: decodedcoordinatorConfig[12] + decodedcoordinatorConfig[13],
-            totalRoundDuration: decodedcoordinatorConfig[9] + decodedcoordinatorConfig[10],
-            epochDuration: (decodedcoordinatorConfig[12] + decodedcoordinatorConfig[13]) + (decodedcoordinatorConfig[9] + decodedcoordinatorConfig[10]) * decodedcoordinatorConfig[6] + decodedcoordinatorConfig[11]
+            roundDuration: decodedcoordinatorConfig[7],
+            roundBuffer: decodedcoordinatorConfig[8],
+            slashingDuration: decodedcoordinatorConfig[9],
+            commitPhaseDuration: decodedcoordinatorConfig[10],
+            revealPhaseDuration: decodedcoordinatorConfig[11],
+            selectionPhaseDuration: decodedcoordinatorConfig[10] + decodedcoordinatorConfig[11],
+            totalRoundDuration: decodedcoordinatorConfig[7] + decodedcoordinatorConfig[8],
+            epochDuration: (decodedcoordinatorConfig[10] + decodedcoordinatorConfig[11]) + (decodedcoordinatorConfig[7] + decodedcoordinatorConfig[8]) * decodedcoordinatorConfig[6] + decodedcoordinatorConfig[9],
+            modulesLength: decodedcoordinatorConfig[12],
+            executionTax: decodedcoordinatorConfig[13],
+            zeroFeeExecutionTax: decodedcoordinatorConfig[14],
+            protocolPoolCutBps: decodedcoordinatorConfig[15]
         };
     }
     async getAllowance(token, allower, spender) {
@@ -179,13 +179,13 @@ class EESSDK {
             return { transactionHash: txHash };
         }
     }
-    async createJob(jobSpecification, sponsor, sponsorSignature, hasSponsorship, index, options) {
+    async createJob(jobSpecification, sponsor, sponsorSignature, ownerSignature, index, options) {
         this.checkProtocolConfig();
         const result = await this.executeTransaction({
             address: this.protocolConfig.jobRegistry,
             abi: jobRegistry_1.jobRegistryAbi,
             functionName: 'createJob',
-            args: [jobSpecification, sponsor, sponsorSignature, hasSponsorship, index],
+            args: [jobSpecification, sponsor, sponsorSignature, ownerSignature, index],
         }, options);
         let jobIndex;
         if (result.transactionReceipt) {
@@ -261,7 +261,7 @@ class EESSDK {
         });
         return unwatch;
     }
-    async signJobSpecification(jobSpecification) {
+    async signJobSpecificationSponsor(jobSpecification) {
         this.checkProtocolConfig();
         if (!this.walletClient)
             throw new Error('Wallet client not provided.');
@@ -280,7 +280,8 @@ class EESSDK {
                     { name: 'sponsorFallbackToOwner', type: 'bool' },
                     { name: 'sponsorCanUpdateFeeModule', type: 'bool' },
                     { name: 'application', type: 'address' },
-                    { name: 'executionWindow', type: 'uint32' },
+                    { name: 'executionWindow', type: 'uint24' },
+                    { name: 'zeroFeeWindow', type: 'uint24' },
                     { name: 'maxExecutions', type: 'uint48' },
                     { name: 'ignoreAppRevert', type: 'bool' },
                     { name: 'executionModule', type: 'bytes1' },
@@ -299,6 +300,60 @@ class EESSDK {
                 sponsorCanUpdateFeeModule: jobSpecification.sponsorCanUpdateFeeModule,
                 application: jobSpecification.application,
                 executionWindow: jobSpecification.executionWindow,
+                zeroFeeWindow: jobSpecification.zeroFeeWindow,
+                maxExecutions: jobSpecification.maxExecutions,
+                ignoreAppRevert: jobSpecification.ignoreAppRevert,
+                executionModule: jobSpecification.executionModule,
+                feeModule: jobSpecification.feeModule,
+                executionModuleInputHash: (0, viem_1.keccak256)(jobSpecification.executionModuleInput),
+                feeModuleInputHash: (0, viem_1.keccak256)(jobSpecification.feeModuleInput),
+                applicationInputHash: (0, viem_1.keccak256)(jobSpecification.applicationInput)
+            },
+        });
+        return signature;
+    }
+    async signJobSpecificationOwner(jobSpecification) {
+        this.checkProtocolConfig();
+        if (!this.walletClient)
+            throw new Error('Wallet client not provided.');
+        const signature = await this.walletClient.signTypedData({
+            account: this.walletClient.account,
+            domain: {
+                name: "JobRegistry",
+                chainId: this.walletClient.chain.id,
+                verifyingContract: this.protocolConfig.jobRegistry,
+            },
+            types: {
+                JobSpecification: [
+                    { name: 'owner', type: 'address' },
+                    { name: 'nonce', type: 'uint256' },
+                    { name: 'deadline', type: 'uint256' },
+                    { name: 'reusableNonce', type: 'bool' },
+                    { name: 'sponsorFallbackToOwner', type: 'bool' },
+                    { name: 'sponsorCanUpdateFeeModule', type: 'bool' },
+                    { name: 'application', type: 'address' },
+                    { name: 'executionWindow', type: 'uint24' },
+                    { name: 'zeroFeeWindow', type: 'uint24' },
+                    { name: 'maxExecutions', type: 'uint48' },
+                    { name: 'ignoreAppRevert', type: 'bool' },
+                    { name: 'executionModule', type: 'bytes1' },
+                    { name: 'feeModule', type: 'bytes1' },
+                    { name: 'executionModuleInputHash', type: 'bytes32' },
+                    { name: 'feeModuleInputHash', type: 'bytes32' },
+                    { name: 'applicationInputHash', type: 'bytes32' }
+                ],
+            },
+            primaryType: 'JobSpecification',
+            message: {
+                owner: jobSpecification.owner,
+                nonce: jobSpecification.nonce,
+                deadline: jobSpecification.deadline,
+                reusableNonce: jobSpecification.reusableNonce,
+                sponsorFallbackToOwner: jobSpecification.sponsorFallbackToOwner,
+                sponsorCanUpdateFeeModule: jobSpecification.sponsorCanUpdateFeeModule,
+                application: jobSpecification.application,
+                executionWindow: jobSpecification.executionWindow,
+                zeroFeeWindow: jobSpecification.zeroFeeWindow,
                 maxExecutions: jobSpecification.maxExecutions,
                 ignoreAppRevert: jobSpecification.ignoreAppRevert,
                 executionModule: jobSpecification.executionModule,
@@ -644,6 +699,7 @@ class EESSDK {
             sponsor: jobData.sponsor,
             application: jobData.application,
             executionWindow: jobData.executionWindow,
+            zeroFeeWindow: jobData.zeroFeeWindow,
             executionCounter: jobData.executionCounter,
             maxExecutions: jobData.maxExecutions,
             creationTime: jobData.creationTime,

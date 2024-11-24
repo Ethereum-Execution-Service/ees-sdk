@@ -15,7 +15,7 @@ export declare class EESSDK {
     getJobsArrayLength(): Promise<bigint>;
     getJobs(indices: bigint[]): Promise<Job[]>;
     private executeTransaction;
-    createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, hasSponsorship: boolean, index: bigint, options?: ContractCallOptions): Promise<{
+    createJob(jobSpecification: JobSpecification, sponsor: `0x${string}`, sponsorSignature: `0x${string}`, ownerSignature: `0x${string}`, index: bigint, options?: ContractCallOptions): Promise<{
         transactionHash: `0x${string}`;
         transactionReceipt?: TransactionReceipt;
         jobIndex?: bigint;
@@ -27,7 +27,8 @@ export declare class EESSDK {
     watchCreatedJobs(application: `0x${string}`, onCreatedJob: (index: bigint) => any): WatchEventReturnType;
     watchExecutedJobs(application: `0x${string}`, onExecutedJob: (index: bigint) => any): WatchEventReturnType;
     watchDeletedJobs(application: `0x${string}`, onDeletedJob: (index: bigint) => any): WatchEventReturnType;
-    signJobSpecification(jobSpecification: JobSpecification): Promise<`0x${string}`>;
+    signJobSpecificationSponsor(jobSpecification: JobSpecification): Promise<`0x${string}`>;
+    signJobSpecificationOwner(jobSpecification: JobSpecification): Promise<`0x${string}`>;
     signFeeModuleInput(feeModuleInput: FeeModuleInput): Promise<`0x${string}`>;
     getExecutorInfo(executors: `0x${string}`[]): Promise<ExecutorInfo[]>;
     getEpochInfo(): Promise<EpochInfo>;

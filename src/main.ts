@@ -6,25 +6,27 @@ import { EESSDK } from "./EESSDK";
 
 async function main() {
   
-  const configProviderAddress = "0x216656149b5CDd0588DD3dccCEBdfb07342b83Df";
+  const configProviderAddress = "0x46037b6dE601Fb88f4f1F196f2dd8D511e8cD991";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
 
-  const applicationAddress: `0x${string}` = "0x04DBf8beAb1ccFc4359640A66dBfe98f83329ABe";
+  const applicationAddress: `0x${string}` = "0x221A83F7b7D50d72f66046E67D05F8BcE9e250A2";
 
 
   const jobSpecification: JobSpecification = {
+    owner: walletClient.account?.address!,
     nonce: BigInt(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)),
     deadline: 1157920892373161954235709850086879078532694665640564039457584007913129639935n,
     application: applicationAddress,
     executionWindow: 60,
+    zeroFeeWindow: 0,
     maxExecutions: 0,
     reusableNonce: false,
     sponsorFallbackToOwner: false,
     sponsorCanUpdateFeeModule: false,
     ignoreAppRevert: false,
     executionModule: "0x00",
-    feeModule: "0x00",
+    feeModule: "0x01",
     executionModuleInput: encodeAbiParameters(
       [
           {name: 'cooldown', type: 'uint32'},
@@ -56,7 +58,7 @@ async function main() {
   //console.log(eesSdk.getProtocolConfig());
 
   //console.log(jobSpecification);
-  const signature: `0x${string}` = await eesSdk.signJobSpecification(jobSpecification);
+  const signature: `0x${string}` = await eesSdk.signJobSpecificationSponsor(jobSpecification);
   //console.log("signature:", signature);
   
   /*
@@ -74,6 +76,7 @@ async function main() {
     console.log(result.transactionReceipt);
   });
   */
+  
   
   
   
@@ -162,7 +165,7 @@ async function main() {
 
   
   
-  await eesSdk.createJob(jobSpecification, walletClient.account?.address!, signature, 100n).then((res) => {
+  await eesSdk.createJob(jobSpecification, walletClient.account?.address!, signature, "0x", 10000000000n).then((res) => {
     console.log(res);
   })
     

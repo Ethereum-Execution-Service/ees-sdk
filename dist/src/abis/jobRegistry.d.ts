@@ -1,13 +1,13 @@
 export declare const jobRegistryAbi: readonly [{
     readonly type: "constructor";
     readonly inputs: readonly [{
-        readonly name: "_treasury";
+        readonly name: "_coordinator";
         readonly type: "address";
-        readonly internalType: "address";
+        readonly internalType: "contract Coordinator";
     }, {
-        readonly name: "_executionContract";
+        readonly name: "_publicERC6492Validator";
         readonly type: "address";
-        readonly internalType: "address";
+        readonly internalType: "contract PublicERC6492Validator";
     }];
     readonly stateMutability: "nonpayable";
 }, {
@@ -22,32 +22,16 @@ export declare const jobRegistryAbi: readonly [{
     readonly stateMutability: "view";
 }, {
     readonly type: "function";
-    readonly name: "addExecutionModule";
-    readonly inputs: readonly [{
-        readonly name: "_module";
-        readonly type: "address";
-        readonly internalType: "contract IExecutionModule";
-    }];
-    readonly outputs: readonly [];
-    readonly stateMutability: "nonpayable";
-}, {
-    readonly type: "function";
-    readonly name: "addFeeModule";
-    readonly inputs: readonly [{
-        readonly name: "_module";
-        readonly type: "address";
-        readonly internalType: "contract IFeeModule";
-    }];
-    readonly outputs: readonly [];
-    readonly stateMutability: "nonpayable";
-}, {
-    readonly type: "function";
     readonly name: "createJob";
     readonly inputs: readonly [{
         readonly name: "_specification";
         readonly type: "tuple";
         readonly internalType: "struct IJobRegistry.JobSpecification";
         readonly components: readonly [{
+            readonly name: "owner";
+            readonly type: "address";
+            readonly internalType: "address";
+        }, {
             readonly name: "nonce";
             readonly type: "uint256";
             readonly internalType: "uint256";
@@ -73,8 +57,12 @@ export declare const jobRegistryAbi: readonly [{
             readonly internalType: "contract IApplication";
         }, {
             readonly name: "executionWindow";
-            readonly type: "uint32";
-            readonly internalType: "uint32";
+            readonly type: "uint24";
+            readonly internalType: "uint24";
+        }, {
+            readonly name: "zeroFeeWindow";
+            readonly type: "uint24";
+            readonly internalType: "uint24";
         }, {
             readonly name: "maxExecutions";
             readonly type: "uint48";
@@ -110,6 +98,10 @@ export declare const jobRegistryAbi: readonly [{
         readonly internalType: "address";
     }, {
         readonly name: "_sponsorSignature";
+        readonly type: "bytes";
+        readonly internalType: "bytes";
+    }, {
+        readonly name: "_ownerSignature";
         readonly type: "bytes";
         readonly internalType: "bytes";
     }, {
@@ -167,22 +159,20 @@ export declare const jobRegistryAbi: readonly [{
         readonly name: "";
         readonly type: "address";
         readonly internalType: "address";
+    }, {
+        readonly name: "";
+        readonly type: "uint8";
+        readonly internalType: "uint8";
+    }, {
+        readonly name: "";
+        readonly type: "uint8";
+        readonly internalType: "uint8";
+    }, {
+        readonly name: "";
+        readonly type: "bool";
+        readonly internalType: "bool";
     }];
     readonly stateMutability: "nonpayable";
-}, {
-    readonly type: "function";
-    readonly name: "executionModules";
-    readonly inputs: readonly [{
-        readonly name: "";
-        readonly type: "uint256";
-        readonly internalType: "uint256";
-    }];
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly type: "address";
-        readonly internalType: "contract IExecutionModule";
-    }];
-    readonly stateMutability: "view";
 }, {
     readonly type: "function";
     readonly name: "exportConfig";
@@ -191,20 +181,6 @@ export declare const jobRegistryAbi: readonly [{
         readonly name: "";
         readonly type: "bytes";
         readonly internalType: "bytes";
-    }];
-    readonly stateMutability: "view";
-}, {
-    readonly type: "function";
-    readonly name: "feeModules";
-    readonly inputs: readonly [{
-        readonly name: "";
-        readonly type: "uint256";
-        readonly internalType: "uint256";
-    }];
-    readonly outputs: readonly [{
-        readonly name: "";
-        readonly type: "address";
-        readonly internalType: "contract IFeeModule";
     }];
     readonly stateMutability: "view";
 }, {
@@ -269,8 +245,12 @@ export declare const jobRegistryAbi: readonly [{
         readonly internalType: "bytes1";
     }, {
         readonly name: "executionWindow";
-        readonly type: "uint32";
-        readonly internalType: "uint32";
+        readonly type: "uint24";
+        readonly internalType: "uint24";
+    }, {
+        readonly name: "zeroFeeWindow";
+        readonly type: "uint24";
+        readonly internalType: "uint24";
     }, {
         readonly name: "sponsor";
         readonly type: "address";
@@ -313,12 +293,12 @@ export declare const jobRegistryAbi: readonly [{
     readonly stateMutability: "view";
 }, {
     readonly type: "function";
-    readonly name: "owner";
+    readonly name: "publicERC6492Validator";
     readonly inputs: readonly [];
     readonly outputs: readonly [{
         readonly name: "";
         readonly type: "address";
-        readonly internalType: "address";
+        readonly internalType: "contract PublicERC6492Validator";
     }];
     readonly stateMutability: "view";
 }, {
@@ -328,16 +308,6 @@ export declare const jobRegistryAbi: readonly [{
         readonly name: "_index";
         readonly type: "uint256";
         readonly internalType: "uint256";
-    }];
-    readonly outputs: readonly [];
-    readonly stateMutability: "nonpayable";
-}, {
-    readonly type: "function";
-    readonly name: "transferOwnership";
-    readonly inputs: readonly [{
-        readonly name: "newOwner";
-        readonly type: "address";
-        readonly internalType: "address";
     }];
     readonly outputs: readonly [];
     readonly stateMutability: "nonpayable";
@@ -512,21 +482,11 @@ export declare const jobRegistryAbi: readonly [{
         readonly type: "address";
         readonly indexed: false;
         readonly internalType: "address";
-    }];
-    readonly anonymous: false;
-}, {
-    readonly type: "event";
-    readonly name: "OwnershipTransferred";
-    readonly inputs: readonly [{
-        readonly name: "user";
-        readonly type: "address";
-        readonly indexed: true;
-        readonly internalType: "address";
     }, {
-        readonly name: "newOwner";
-        readonly type: "address";
-        readonly indexed: true;
-        readonly internalType: "address";
+        readonly name: "inZeroFeeWindow";
+        readonly type: "bool";
+        readonly indexed: false;
+        readonly internalType: "bool";
     }];
     readonly anonymous: false;
 }, {
@@ -551,7 +511,7 @@ export declare const jobRegistryAbi: readonly [{
     readonly anonymous: false;
 }, {
     readonly type: "error";
-    readonly name: "InvalidContractSignature";
+    readonly name: "InvalidModule";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
@@ -560,14 +520,6 @@ export declare const jobRegistryAbi: readonly [{
 }, {
     readonly type: "error";
     readonly name: "InvalidSignature";
-    readonly inputs: readonly [];
-}, {
-    readonly type: "error";
-    readonly name: "InvalidSignatureLength";
-    readonly inputs: readonly [];
-}, {
-    readonly type: "error";
-    readonly name: "InvalidSigner";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";
@@ -609,6 +561,10 @@ export declare const jobRegistryAbi: readonly [{
         readonly type: "uint256";
         readonly internalType: "uint256";
     }];
+}, {
+    readonly type: "error";
+    readonly name: "TransferFailed";
+    readonly inputs: readonly [];
 }, {
     readonly type: "error";
     readonly name: "Unauthorized";
