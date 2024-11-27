@@ -64,7 +64,7 @@ export declare class EESSDK {
         transactionHash: `0x${string}`;
         transactionReceipt?: TransactionReceipt;
     }>;
-    stake(options?: ContractCallOptions): Promise<{
+    stake(modules: `0x${string}`[], options?: ContractCallOptions): Promise<{
         transactionHash: `0x${string}`;
         transactionReceipt?: TransactionReceipt;
     }>;
@@ -101,5 +101,6 @@ export declare class EESSDK {
     jobIsExpired(job: Job): boolean;
     jobInExecutionWindow(job: Job): boolean;
     jobIsDeleted(job: Job): boolean;
+    modulesToBitset(modules: `0x${string}`[]): bigint;
     private formatJobData;
 }

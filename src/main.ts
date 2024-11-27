@@ -78,23 +78,15 @@ async function main() {
   */
   
   
-  
-  
-  
-  
-
   /*
   await eesSdk.approveStakingToken(115792089237316195423570985008687907853269984665640564039457584007913129639935n).then((result) => {
     console.log(result.transactionReceipt);
   });
  
-  await eesSdk.stake({ simulate: true }).then((result) => {
+  await eesSdk.stake(["0x00", "0x01"], { simulate: true }).then((result) => {
     console.log(result.transactionReceipt);
   });
   */
-  
-  
-  
   
   
   
@@ -104,6 +96,7 @@ async function main() {
     console.log(result.transactionReceipt);
   });
   */
+  
   
   
   //const currentEpoch: bigint = await eesSdk.getEpoch();
@@ -164,10 +157,11 @@ async function main() {
   //console.log(domainSeparator);
 
   
-  
+  /*
   await eesSdk.createJob(jobSpecification, walletClient.account?.address!, signature, "0x", 10000000000n).then((res) => {
     console.log(res);
   })
+    */
     
     
     

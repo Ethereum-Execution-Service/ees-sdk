@@ -560,12 +560,15 @@ class EESSDK {
         }, options);
         return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
-    async stake(options) {
+    async stake(modules, options) {
         this.checkProtocolConfig();
+        // Convert modules array to bitset
+        const bitset = this.modulesToBitset(modules);
         const result = await this.executeTransaction({
             address: this.protocolConfig.coordinator,
             abi: coordinator_1.coordinatorAbi,
             functionName: 'stake',
+            args: [bitset],
         }, options);
         return { transactionHash: result.transactionHash, transactionReceipt: result.transactionReceipt };
     }
@@ -666,6 +669,13 @@ class EESSDK {
     }
     jobIsDeleted(job) {
         return job.owner === '0x0000000000000000000000000000000000000000';
+    }
+    modulesToBitset(modules) {
+        // takes a list of module bytes [0x00, 0x02, ...] and returns a bitset
+        return modules.reduce((acc, module) => {
+            const bitPosition = parseInt(module.slice(2), 16);
+            return acc | (1n << BigInt(bitPosition));
+        }, 0n);
     }
     formatJobData(index, jobData) {
         let executionModule;
