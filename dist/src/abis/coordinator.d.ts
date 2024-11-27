@@ -217,8 +217,8 @@ export declare const coordinatorAbi: readonly [{
         readonly internalType: "uint256";
     }, {
         readonly name: "";
-        readonly type: "uint256";
-        readonly internalType: "uint256";
+        readonly type: "uint96";
+        readonly internalType: "uint96";
     }];
     readonly stateMutability: "nonpayable";
 }, {
@@ -823,6 +823,10 @@ export declare const coordinatorAbi: readonly [{
 }, {
     readonly type: "error";
     readonly name: "MinimumRegistrationPeriodNotOver";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "NoModulesToRegister";
     readonly inputs: readonly [];
 }, {
     readonly type: "error";

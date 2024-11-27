@@ -542,7 +542,7 @@ class EESSDK {
         if (currentTime >= job.nextExecution) {
             const timeSinceNextExecution = currentTime - job.nextExecution;
             if (timeSinceNextExecution < job.executionWindow) {
-                if (job.feeModuleCode === "0x00") {
+                if (job.feeModuleCode === "0x01") {
                     const feeDiff = job.feeModule.maxExecutionFee - job.feeModule.minExecutionFee;
                     const fee = ((feeDiff * timeSinceNextExecution) / (BigInt(job.executionWindow) - 1n)) + job.feeModule.minExecutionFee;
                     return { fee: fee, token: job.feeModule.executionFeeToken };
@@ -680,7 +680,7 @@ class EESSDK {
             };
             nextExecution = BigInt(executionModule.lastExecution + executionModule.cooldown);
         }
-        if (jobData.feeModule === "0x00") {
+        if (jobData.feeModule === "0x01") {
             // LinearAuction
             const feeModuleData = (0, viem_1.decodeAbiParameters)([{ name: 'executionFeeToken', type: 'address' }, { name: 'minExecutionFee', type: 'uint256' }, { name: 'maxExecutionFee', type: 'uint256' }], jobData.feeModuleData);
             feeModule = {

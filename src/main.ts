@@ -6,11 +6,11 @@ import { EESSDK } from "./EESSDK";
 
 async function main() {
   
-  const configProviderAddress = "0x46037b6dE601Fb88f4f1F196f2dd8D511e8cD991";
+  const configProviderAddress = "0x7F61fe25a89eDA680aA0677121E50632dfd390Bd";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
 
-  const applicationAddress: `0x${string}` = "0x221A83F7b7D50d72f66046E67D05F8BcE9e250A2";
+  const applicationAddress: `0x${string}` = "0xdf659A77CAd242bD95cB51492a70bcEf4AF50126";
 
 
   const jobSpecification: JobSpecification = {

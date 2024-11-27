@@ -149,10 +149,6 @@ export declare const jobRegistryAbi: readonly [{
     }];
     readonly outputs: readonly [{
         readonly name: "";
-        readonly type: "uint96";
-        readonly internalType: "uint96";
-    }, {
-        readonly name: "";
         readonly type: "uint256";
         readonly internalType: "uint256";
     }, {
@@ -372,6 +368,11 @@ export declare const jobRegistryAbi: readonly [{
         readonly type: "address";
         readonly indexed: true;
         readonly internalType: "address";
+    }, {
+        readonly name: "feeModule";
+        readonly type: "bytes1";
+        readonly indexed: false;
+        readonly internalType: "bytes1";
     }];
     readonly anonymous: false;
 }, {
