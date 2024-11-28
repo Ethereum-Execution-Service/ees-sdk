@@ -575,6 +575,11 @@ export declare const coordinatorAbi: readonly [{
         readonly type: "uint256";
         readonly indexed: false;
         readonly internalType: "uint256";
+    }, {
+        readonly name: "inRound";
+        readonly type: "bool";
+        readonly indexed: false;
+        readonly internalType: "bool";
     }];
     readonly anonymous: false;
 }, {

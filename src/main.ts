@@ -6,11 +6,11 @@ import { EESSDK } from "./EESSDK";
 
 async function main() {
   
-  const configProviderAddress = "0x7F61fe25a89eDA680aA0677121E50632dfd390Bd";
+  const configProviderAddress = "0xD8C99E36913088c1F611C3f862eFb6090285B4DC";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
 
-  const applicationAddress: `0x${string}` = "0xdf659A77CAd242bD95cB51492a70bcEf4AF50126";
+  const applicationAddress: `0x${string}` = "0x6403B88FF241b469BAf5EcD84dC1d6BEef27f827";
 
 
   const jobSpecification: JobSpecification = {
@@ -67,6 +67,7 @@ async function main() {
   });
   */
   
+  
   /*
   await eesSdk.approveFeeToken("0x7139F4601480d20d43Fa77780B67D295805aD31a", 115792089237316195423570985008687907853269984665640564039457584007913129639935n, { waitForReceipt: true }).then((result) => {
     console.log(result.transactionReceipt);
@@ -104,7 +105,7 @@ async function main() {
 // get chain id
 //console.log(publicClient.chain?.id);
   
- /*
+  /*
   const currentEpoch: bigint = await eesSdk.getEpoch();
   console.log("CURRENT EPOCH: ", currentEpoch);
   */
@@ -114,6 +115,8 @@ async function main() {
     console.log(res.transactionHash);
   });
   */
+  
+  
 
   /*
   await eesSdk.commit(6n).then((res) => {
@@ -140,8 +143,6 @@ async function main() {
   });
   */
   //console.log(eesSdk.getProtocolConfig());
-  
-  
 
   //const res: readonly[bigint, boolean] = await eesSdk.getTokenPrice("0xF671644C9e793caF69a45520B609DDD83611FE34", encodeAbiParameters([{ name: 'feed', type: 'address' }], ["0x0FB99723Aee6f420beAD13e6bBB79b7E6F034298"]));
   //console.log(res);
@@ -172,17 +173,6 @@ async function main() {
   });
   */
   
-    
-    
-  
-
-  /*
-  console.log(eesSdk.getProtocolConfig());
-
-  await eesSdk.getEpochInfo().then((epochInfo) => {
-    console.log(epochInfo);
-  });
-  */
   
     
 
