@@ -9,7 +9,6 @@ async function main() {
   const configProviderAddress = "0xD8C99E36913088c1F611C3f862eFb6090285B4DC";
   const eesSdk: EESSDK = await EESSDK.init(configProviderAddress, publicClient as PublicClient, walletClient as WalletClient);
 
-
   const applicationAddress: `0x${string}` = "0x6403B88FF241b469BAf5EcD84dC1d6BEef27f827";
 
 
@@ -58,14 +57,14 @@ async function main() {
   //console.log(eesSdk.getProtocolConfig());
 
   //console.log(jobSpecification);
-  const signature: `0x${string}` = await eesSdk.signJobSpecificationSponsor(jobSpecification);
+  //const signature: `0x${string}` = await eesSdk.signJobSpecificationSponsor(jobSpecification);
   //console.log("signature:", signature);
   
-  /*
+  
   await eesSdk.getEpochInfo().then((epochInfo) => {
     console.log(epochInfo);
   });
-  */
+  
   
   
   /*

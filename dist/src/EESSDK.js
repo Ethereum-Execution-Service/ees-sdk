@@ -17,7 +17,9 @@ class EESSDK {
         if (walletClient && walletClient.chain?.id !== publicClient.chain?.id)
             throw new Error('Chain ID mismatch between public client and wallet client.');
         const instance = new EESSDK(publicClient, walletClient);
+        console.log("checkpoint 1");
         await instance.fetchAndSetConfig(configProviderAddress);
+        console.log("checkpoint 6");
         return instance;
     }
     async fetchAndSetConfig(configProviderAddress) {
@@ -26,6 +28,7 @@ class EESSDK {
             abi: configProvider_1.configProviderAbi,
             functionName: 'getConfig',
         });
+        console.log("checkpoint 2");
         if (!config)
             throw new Error('Failed to fetch protocol config.');
         const decodedAddresses = (0, viem_1.decodeAbiParameters)([
@@ -34,9 +37,11 @@ class EESSDK {
             { name: 'querier', type: 'address' },
             { name: 'batchSlasher', type: 'address' }
         ], config[0]);
+        console.log("checkpoint 3");
         const decodedJobRegistryConfig = (0, viem_1.decodeAbiParameters)([
             { name: 'executionGasOverhead', type: 'uint256' }
         ], config[1]);
+        console.log("checkpoint 4");
         const decodedcoordinatorConfig = (0, viem_1.decodeAbiParameters)([
             { name: 'stakingToken', type: 'address' },
             { name: 'stakingAmountPerModule', type: 'uint256' },
@@ -55,6 +60,7 @@ class EESSDK {
             { name: 'zeroFeeExecutionTax', type: 'uint256' },
             { name: 'protocolPoolCutBps', type: 'uint256' }
         ], config[2]);
+        console.log("checkpoint 5");
         this.protocolConfig = {
             jobRegistry: decodedAddresses[0],
             coordinator: decodedAddresses[1],
