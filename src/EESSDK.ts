@@ -12,6 +12,8 @@ export class EESSDK {
   private walletClient: WalletClient | undefined;
   private protocolConfig: ProtocolConfig | undefined;
 
+  public static readonly version = '1.0.0';
+
   private constructor(publicClient: PublicClient, walletClient?: WalletClient, simulateBeforeWrite: boolean = true) {
     this.publicClient = publicClient;
     this.walletClient = walletClient;

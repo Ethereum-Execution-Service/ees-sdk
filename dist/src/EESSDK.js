@@ -729,3 +729,4 @@ class EESSDK {
     }
 }
 exports.EESSDK = EESSDK;
+EESSDK.version = '1.0.0';
