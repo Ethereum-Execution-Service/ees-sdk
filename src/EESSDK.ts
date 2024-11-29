@@ -18,12 +18,9 @@ export class EESSDK {
   }
 
   static async init(configProviderAddress: `0x${string}`, publicClient: PublicClient, walletClient?: WalletClient) : Promise<EESSDK> {
-    console.log("Initializing EESSDK");
     if(walletClient && walletClient.chain?.id !== publicClient.chain?.id) throw new Error('Chain ID mismatch between public client and wallet client.');
     const instance = new EESSDK(publicClient, walletClient);
-    console.log("checkpoint 1");
     await instance.fetchAndSetConfig(configProviderAddress);
-    console.log("checkpoint 6");
     return instance;
   }
 
@@ -33,8 +30,6 @@ export class EESSDK {
       abi: configProviderAbi,
       functionName: 'getConfig',
     });
-
-    console.log("checkpoint 2");
 
     if(!config) throw new Error('Failed to fetch protocol config.');
 
@@ -48,16 +43,12 @@ export class EESSDK {
       config[0]
     );
 
-    console.log("checkpoint 3");
-
     const decodedJobRegistryConfig = decodeAbiParameters(
       [
         { name: 'executionGasOverhead', type: 'uint256' }
       ],
       config[1]
     );
-
-    console.log("checkpoint 4");
 
     const decodedcoordinatorConfig = decodeAbiParameters(
       [
@@ -80,8 +71,6 @@ export class EESSDK {
       ],
       config[2]
     );
-
-    console.log("checkpoint 5");
 
     this.protocolConfig = {
       jobRegistry: decodedAddresses[0],
