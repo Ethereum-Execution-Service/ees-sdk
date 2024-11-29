@@ -14,6 +14,7 @@ class EESSDK {
         this.walletClient = walletClient;
     }
     static async init(configProviderAddress, publicClient, walletClient) {
+        console.log("Initializing EESSDK");
         if (walletClient && walletClient.chain?.id !== publicClient.chain?.id)
             throw new Error('Chain ID mismatch between public client and wallet client.');
         const instance = new EESSDK(publicClient, walletClient);
@@ -156,7 +157,6 @@ class EESSDK {
             throw new Error('Wallet client not provided.');
         let txHash;
         if (options?.simulate !== false) {
-            // Simulation logic
             const { request } = await this.publicClient.simulateContract({
                 ...contractCall,
                 chain: this.walletClient.chain,
@@ -165,11 +165,9 @@ class EESSDK {
             });
             if (!request)
                 throw new Error(`Failed to simulate ${contractCall.functionName}.`);
-            // After successful simulation, proceed with the actual transaction
             txHash = await this.walletClient.writeContract(request);
         }
         else {
-            // Direct write logic without simulation
             txHash = await this.walletClient.writeContract({
                 ...contractCall,
                 chain: this.walletClient.chain,
@@ -195,7 +193,6 @@ class EESSDK {
         }, options);
         let jobIndex;
         if (result.transactionReceipt) {
-            // Find the JobCreated event and extract the index
             const jobCreatedEvent = result.transactionReceipt.logs
                 .find(log => log.address.toLowerCase() === this.protocolConfig.jobRegistry.toLowerCase() &&
                 log.topics[0] === (0, viem_1.keccak256)((0, viem_1.toBytes)('JobCreated(uint256,address,address,bool)')));
@@ -468,7 +465,6 @@ class EESSDK {
         }, options);
         let failedIndices;
         if (result.transactionReceipt) {
-            // Find the BatchExecution event and extract the failedIndices
             const batchExecutionEvent = result.transactionReceipt.logs
                 .find(log => log.address.toLowerCase() === this.protocolConfig.coordinator.toLowerCase() &&
                 log.topics[0] === (0, viem_1.keccak256)((0, viem_1.toBytes)('BatchExecution(uint256[])')));
@@ -568,7 +564,6 @@ class EESSDK {
     }
     async stake(modules, options) {
         this.checkProtocolConfig();
-        // Convert modules array to bitset
         const bitset = this.modulesToBitset(modules);
         const result = await this.executeTransaction({
             address: this.protocolConfig.coordinator,
@@ -677,7 +672,6 @@ class EESSDK {
         return job.owner === '0x0000000000000000000000000000000000000000';
     }
     modulesToBitset(modules) {
-        // takes a list of module bytes [0x00, 0x02, ...] and returns a bitset
         return modules.reduce((acc, module) => {
             const bitPosition = parseInt(module.slice(2), 16);
             return acc | (1n << BigInt(bitPosition));
@@ -688,7 +682,6 @@ class EESSDK {
         let nextExecution = 0n;
         let feeModule;
         if (jobData.executionModule === "0x00") {
-            // RegularTimeInterval
             const executionModuleData = (0, viem_1.decodeAbiParameters)([{ name: 'lastExecution', type: 'uint40' }, { name: 'cooldown', type: 'uint32' }], jobData.executionModuleData);
             executionModule = {
                 lastExecution: executionModuleData[0],
@@ -697,7 +690,6 @@ class EESSDK {
             nextExecution = BigInt(executionModule.lastExecution + executionModule.cooldown);
         }
         if (jobData.feeModule === "0x01") {
-            // LinearAuction
             const feeModuleData = (0, viem_1.decodeAbiParameters)([{ name: 'executionFeeToken', type: 'address' }, { name: 'minExecutionFee', type: 'uint256' }, { name: 'maxExecutionFee', type: 'uint256' }], jobData.feeModuleData);
             feeModule = {
                 executionFeeToken: feeModuleData[0],
@@ -729,4 +721,3 @@ class EESSDK {
     }
 }
 exports.EESSDK = EESSDK;
-EESSDK.version = '1.0.0';

@@ -4,7 +4,6 @@ export declare class EESSDK {
     private publicClient;
     private walletClient;
     private protocolConfig;
-    static readonly version = "1.0.0";
     private constructor();
     static init(configProviderAddress: `0x${string}`, publicClient: PublicClient, walletClient?: WalletClient): Promise<EESSDK>;
     private fetchAndSetConfig;

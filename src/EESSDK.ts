@@ -12,14 +12,13 @@ export class EESSDK {
   private walletClient: WalletClient | undefined;
   private protocolConfig: ProtocolConfig | undefined;
 
-  public static readonly version = '1.0.0';
-
   private constructor(publicClient: PublicClient, walletClient?: WalletClient, simulateBeforeWrite: boolean = true) {
     this.publicClient = publicClient;
     this.walletClient = walletClient;
   }
 
   static async init(configProviderAddress: `0x${string}`, publicClient: PublicClient, walletClient?: WalletClient) : Promise<EESSDK> {
+    console.log("Initializing EESSDK");
     if(walletClient && walletClient.chain?.id !== publicClient.chain?.id) throw new Error('Chain ID mismatch between public client and wallet client.');
     const instance = new EESSDK(publicClient, walletClient);
     console.log("checkpoint 1");
